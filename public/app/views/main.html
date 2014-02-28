@@ -1,0 +1,27 @@
+
+<div class='players_list' ng-controller = 'gridCtrl'>
+<div ng-click = postester()>
+click here for wr's
+</div>
+  <table border="1" cellspacing="2" cellpadding="2">
+    <tr><th>Player</th><th>Yards</th><th>TDs</th><th>INT</th>
+    <th>Attempts</th><th>Completions</th><th>Yards</th>
+    <th>TDs</th><th>Rushes</th><th>Yards</th><th>TDs</th><th>Receptions</th>
+    <th>Targets</th></tr>
+    <tbody ng-repeat ='player in players'>
+      <tr>
+      <td ng-click = get_single_player(player.player.player_id)>{{player.player.full_name}}</td>
+      <td>{{player.totals.passing_yds}}</td><td>{{player.totals.passing_tds}}</td>
+      <td>{{player.totals.passing_int}}</td><td>{{player.totals.passing_attempts}}</td>
+      <td>{{player.totals.passing_completions}}</td><td>{{player.totals.rushing_yds}}</td> 
+      <td>{{player.totals.rushing_tds}}</td><td>{{player.totals.rushing_att}}</td> 
+      <td>{{player.totals.receiving_yds}}</td><td>{{player.totals.receiving_tds}}</td> 
+      <td>{{player.totals.receiving_rec}}</td> <td>{{player.totals.receiving_tar}}</td>
+      </tr>
+      <tr ng-show = 'player.player.player_id == active_player'>
+        <td colspan="13"><div single_player></div></td>
+      </tr>
+      
+    </tbody>
+  </table>
+</div>

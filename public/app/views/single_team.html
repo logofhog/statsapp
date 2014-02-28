@@ -1,0 +1,6 @@
+<div ng-repeat = "player in players | orderBy: 'player.position'">
+  {{player.player.full_name}} {{player.player.position}} {{player.player.college}}
+  {{player.player.years_pro}} {{player.stats.rushing_tds}}
+</div>
+
+<div d3-pie data="wrs" class = 'pie' bar-height="20" bar-padding="5"></div>
