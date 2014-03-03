@@ -1,3 +1,19 @@
 h1 {
 color:red;
 }
+
+.tick {
+    stroke: black;
+}
+
+g {
+  fill:none;
+}
+
+.tick line{
+  opacity:0.2;
+}
+
+svg {
+  border:3px solid black;
+}

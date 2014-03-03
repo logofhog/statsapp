@@ -1,7 +1,10 @@
 
 <div class='players_list' ng-controller = 'gridCtrl'>
-<div ng-click = postester()>
-click here for wr's
+<div>
+  <span ng-click="get_position('wr')">WR</span>
+  <span ng-click="get_position('rb')">RB</span>
+  <span ng-click="get_position('qb')">QB</span>
+  <span ng-click="get_position('te')">TE</span>
 </div>
   <table border="1" cellspacing="2" cellpadding="2">
     <tr><th>Player</th><th>Yards</th><th>TDs</th><th>INT</th>
@@ -18,7 +21,7 @@ click here for wr's
       <td>{{player.totals.receiving_yds}}</td><td>{{player.totals.receiving_tds}}</td> 
       <td>{{player.totals.receiving_rec}}</td> <td>{{player.totals.receiving_tar}}</td>
       </tr>
-      <tr ng-show = 'player.player.player_id == active_player'>
+      <tr ng-show = 'player.player.player_id == active_player'> 
         <td colspan="13"><div single_player></div></td>
       </tr>
       

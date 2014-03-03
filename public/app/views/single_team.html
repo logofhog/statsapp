@@ -3,4 +3,17 @@
   {{player.player.years_pro}} {{player.stats.rushing_tds}}
 </div>
 
-<div d3-pie data="wrs" class = 'pie' bar-height="20" bar-padding="5"></div>
+<div class = 'position_links'>
+<span ng-click = "statChoice('passing_yds')">Passing_yds </span>
+<span ng-click = "statChoice('passing_tds')">Passing_tds </span>
+<span ng-click = "statChoice('rushing_yds')">Rushing_yds </span>
+<span ng-click = "statChoice('rushing_tds')">Rushing_tds </span>
+<span ng-click = "statChoice('rushing_att')">Rushing_atts </span>
+<span ng-click = "statChoice('receiving_yds')">Receiving_yds </span>
+<span ng-click = "statChoice('receiving_tds')">Receiving_tds </span>
+<span ng-click = "statChoice('receiving_rec')">Receiving_rec </span>
+<span ng-click = "statChoice('receiving_tar')">Receiving_targets </span>
+  
+</div>
+
+<div d3-pie data="stats" class = 'pie' bar-height="20" bar-padding="5"></div>

@@ -2,13 +2,13 @@
 
 angular.module('angularApp')
   .controller('MainCtrl', function ($scope, apiutils) {
+    
     apiutils.get('/players/').then(function(response) {
       $scope.players = response.data;
     })
     
-    $scope.postester = function() {
-      console.log('clicked')
-      apiutils.get('players/?position=wr').then(function(response) {
+    $scope.get_position = function(position) {
+      apiutils.get('players/?position='+position).then(function(response) {
         console.log('clicked')
         $scope.players = response.data;
       })
@@ -17,25 +17,52 @@ angular.module('angularApp')
   .controller('gridCtrl', function ($scope, apiutils) {
     $scope.get_single_player = function(player_id) {
       $scope.active_player = player_id
+      console.log(player_id)
+      $scope.get_class_name = function() {
+        console.log(player_id)
+        return  "pleas"} // 'player_id.slice(3)'}
+      
       apiutils.get('players/'+player_id).then(function(response){
         $scope.active_player_data = response.data
         console.log($scope.active_player_data)
         }
       );
       }
-    var i = true
-      $scope.order_weeks = function(game) {
-          var week = parseInt(game.game.week)
-          if (game.game.season_type == 'Preseason'){
-            week = week - 5
-            }
-          if (game.game.season_type == 'Postseason'){
-            week = week + 20
+    $scope.is_active = function() {
+      console.log('getting active isactive')
+    }
+      
+    $scope.statChoice = function(stat) {
+      makeGraphData(stat)
+    }
+     
+    function makeGraphData(stat) {    
+     var stats = []
+     //$scope.active_player_data.stats[index].single_game_stats[stat] > 0 --- this was in if statement for some reason
+     for (var index in $scope.active_player_data.stats) {
+      if ($scope.active_player_data.stats[index].game.season_type == 'Regular') {
+       stats.push({'stat': $scope.active_player_data.stats[index].
+                                  single_game_stats[stat], 
+                   'week': $scope.active_player_data.stats[index].
+                                  game.week})
+          } //end if
+        } // end for
+     stats.sort(function(a,b) { return a.week - b.week })
+     $scope.weekstats = stats
+    }//end makeGraphData()
+    
+    $scope.order_weeks = function(game) {
+        var week = parseInt(game.game.week)
+        if (game.game.season_type == 'Preseason'){
+          week = week - 5
           }
-          return week
-      }
+        if (game.game.season_type == 'Postseason'){
+          week = week + 20
+        }
+        return week
+    } //end order_weeks()
 
-    }    
+    }//end controller    
   )
   .controller('TeamCtrl', function($scope, apiutils) {
     apiutils.get('teams/').then(function(response) {
@@ -47,27 +74,24 @@ angular.module('angularApp')
         apiutils.get('/teams/'+$routeParams.id).then(function(response) {
           $scope.players = response.data
           console.log($scope.players)
-          makeWrs()
         })
       }
-    get_data()
-    
-    $scope.tester = [$scope.players]
-    
-    setTimeout(function(){
-      $scope.tester = 10
-    }, 1000);
-   
-    function makeWrs() {    
-      $scope.wrs = []
-      var sum_yds = 0
+      get_data()
+      
+      $scope.statChoice = function(stat) {
+        makeGraphData(stat)
+      }
+     
+      function makeGraphData(stat) {    
+        $scope.stats = []
         for (var index in $scope.players) {
-        if ($scope.players[index].stats.receiving_rec > 1) {
-          $scope.wrs.push($scope.players[index]);
-          sum_yds += $scope.players[index].stats.receiving_yds
-        } //end if
-      } // end for
-    }//end makeWrs()
+          if ($scope.players[index].stats[stat] > 0) {
+            $scope.stats.push({'player': $scope.players[index].player.full_name, 
+                               'stat':   $scope.players[index].stats[stat]});
+  //          sum_yds += $scope.players[index].stats.receiving_yds
+          } //end if
+        } // end for
+    }//end makeGraphData()
       
     })
   

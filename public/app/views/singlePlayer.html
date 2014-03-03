@@ -1,12 +1,27 @@
 <div>
-view as graph | 
+<div class = 'position_links'>
+<span ng-click = "statChoice('passing_yds')">Passing_yds </span>
+<span ng-click = "statChoice('passing_tds')">Passing_tds </span>
+<span ng-click = "statChoice('rushing_yds')">Rushing_yds </span>
+<span ng-click = "statChoice('rushing_tds')">Rushing_tds </span>
+<span ng-click = "statChoice('rushing_att')">Rushing_atts </span>
+<span ng-click = "statChoice('receiving_yds')">Receiving_yds </span>
+<span ng-click = "statChoice('receiving_tds')">Receiving_tds </span>
+<span ng-click = "statChoice('receiving_rec')">Receiving_rec </span>
+<span ng-click = "statChoice('receiving_tar')">Receiving_targets </span>
+  
+</div>
+<div >
+
 <ul>
-  <li ng-repeat = "stats in active_player_data.stats | orderBy:order_weeks">
-  {{stats.game.week}}
-  {{stats.game.home_team}} {{stats.game.home_score}} 
-  {{stats.game.away_team}} {{stats.game.away_score}} 
+  <li ng-repeat = "game in active_player_data.stats | orderBy:order_weeks">
+  {{game.game.week}}
+  {{game.game.home_team}} {{game.game.home_score}} 
+  {{game.game.away_team}} {{game.game.away_score}} 
   </li>
 </ul>
-
+<div ng-class = "{true: 'active_graph', false: 'inactive_graph'} [player.player.player_id == active_player]">
+  <div d3_line_chart stats="weekstats" player="active_player_data.player.player_id"></div>
 </div>
+
 
