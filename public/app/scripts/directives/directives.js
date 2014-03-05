@@ -89,7 +89,6 @@ angular.module('angularApp').
     
       scope.$watch('data', function() {
         if (scope.data){
-//          console.log(scope.data)
           maker()
         }
       })
@@ -109,9 +108,7 @@ angular.module('angularApp').
                   .innerRadius(radius - 170);
                   
         var pie = d3.layout.pie()
-//                  .sort(null)
                   .value(function(d) { return d.stat });
-                  //  .value(function(d) { return d.stats.receiving_yds; });
                   
         var svg = d3.select(".pie")
             .append("svg")
@@ -150,11 +147,9 @@ angular.module('angularApp').
              player: '=player' 
     },
     link: function(scope, element, attrs) {
-      console.log(scope.player)
       scope.$watch('stats', function() {
         if (scope.stats){
           maker()
-          console.log(scope.stats)
         }
       })
 
