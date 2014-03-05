@@ -13,6 +13,9 @@
 
 ActiveRecord::Schema.define(version: 1) do
 
+  # These are extensions that must be enabled in order to support this database
+  enable_extension "plpgsql"
+
   create_table "game_stats", id: false, force: true do |t|
     t.string  "player_id",             limit: 30
     t.integer "gsis_id"
@@ -66,7 +69,7 @@ ActiveRecord::Schema.define(version: 1) do
     t.string  "last_name",      limit: 30
     t.string  "team",           limit: 5
     t.string  "position",       limit: 5
-    t.integer "profile_id",     limit: 3
+    t.integer "profile_id"
     t.integer "uniform_number", limit: 2
     t.string  "birthdate",      limit: 10
     t.string  "college",        limit: 30
@@ -74,7 +77,6 @@ ActiveRecord::Schema.define(version: 1) do
     t.integer "weight",         limit: 2
     t.integer "years_pro",      limit: 2
     t.string  "status",         limit: 30
-    t.integer "sorting_score",  limit: 2
   end
 
   create_table "teams", primary_key: "team_id", force: true do |t|

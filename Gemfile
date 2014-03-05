@@ -6,7 +6,9 @@ gem 'rails', '4.0.2'
 gem 'rails-api'
 
 # Use sqlite3 as the database for Active Record
-gem 'mysql'
+gem 'pg'
+
+gem 'taps'
 
 
 # To use ActiveModel has_secure_password

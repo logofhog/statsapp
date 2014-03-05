@@ -1,5 +1,5 @@
 h1 {
-color:red;
+  color:red;
 }
 
 .tick {
@@ -8,6 +8,10 @@ color:red;
 
 g {
   fill:none;
+}
+
+g.arc {
+  fill:black;
 }
 
 .tick line{

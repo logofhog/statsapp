@@ -2,7 +2,7 @@ class PlayersController < ApplicationController
 
   def index
     if params[:position]
-      @player = Player.where(:position => params[:position])
+      @player = Player.where(:position => params[:position].upcase)
                       .order("sorting_score DESC").limit(25)
     else
       @player = Player.all(:order => "sorting_score DESC", :limit=>25)

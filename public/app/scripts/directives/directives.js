@@ -30,6 +30,12 @@ angular.module('angularApp').
     }
     return single_player
   })
+  .directive('headerlinks', function() {
+    var headerlinks = {
+      templateUrl:'app/views/headerlinks.html'
+    }
+    return headerlinks
+  })
   .directive('d3Bars', function(d3Service) {
     return {
       restrict: 'EA',
@@ -128,6 +134,7 @@ angular.module('angularApp').
                             return "translate(" + arc.centroid(d) + ")"; })
        .attr("dy", ".35em")
        .style("text-anchor", "middle")
+       .style("z-index", "99")
        .text(function(d) { return (d.data.player); });
 //      scope.render(scope.data)
      });      

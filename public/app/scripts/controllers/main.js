@@ -9,7 +9,6 @@ angular.module('angularApp')
     
     $scope.get_position = function(position) {
       apiutils.get('players/?position='+position).then(function(response) {
-        console.log('clicked')
         $scope.players = response.data;
       })
     }
@@ -17,21 +16,12 @@ angular.module('angularApp')
   .controller('gridCtrl', function ($scope, apiutils) {
     $scope.get_single_player = function(player_id) {
       $scope.active_player = player_id
-      console.log(player_id)
-      $scope.get_class_name = function() {
-        console.log(player_id)
-        return  "pleas"} // 'player_id.slice(3)'}
-      
       apiutils.get('players/'+player_id).then(function(response){
         $scope.active_player_data = response.data
-        console.log($scope.active_player_data)
         }
       );
       }
-    $scope.is_active = function() {
-      console.log('getting active isactive')
-    }
-      
+
     $scope.statChoice = function(stat) {
       makeGraphData(stat)
     }
