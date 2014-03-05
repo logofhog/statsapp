@@ -12,7 +12,7 @@
     <th>Targets</th></tr>
     <tbody ng-repeat ='player in players'>
       <tr>
-      <td ng-click = get_single_player(player.player.player_id)>{{player.player.full_name}}</td>
+      <td ng-click = get_single_player(player.player.player_id)><button>{{player.player.full_name}}</button></td>
       <td>{{player.totals.passing_yds}}</td><td>{{player.totals.passing_tds}}</td>
       <td>{{player.totals.passing_int}}</td><td>{{player.totals.passing_attempts}}</td>
       <td>{{player.totals.passing_completions}}</td><td>{{player.totals.rushing_yds}}</td> 
