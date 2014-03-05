@@ -10,8 +10,7 @@ gem 'pg'
 
 gem 'taps'
 gem 'rails_log_stdout',           github: 'heroku/rails_log_stdout'
-gem 'rails3_serve_static_assets', github: 'heroku/rails3_serve_static_assets'
-
+gem 'rails_serve_static_assets'
 # To use ActiveModel has_secure_password
 # gem 'bcrypt-ruby', '~> 3.0.0'
 
