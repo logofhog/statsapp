@@ -2,26 +2,80 @@
 
 angular.module('angularApp')
   .controller('MainCtrl', function ($scope, apiutils) {
-    
-    apiutils.get('/players/').then(function(response) {
-      $scope.players = response.data;
-    })
-    
-    $scope.get_position = function(position) {
-      apiutils.get('players/?position='+position).then(function(response) {
+  
+    var get_data = function(urlparams) {
+      $scope.disabled = true
+      apiutils.get('/players/'+ urlparams).then(function(response) {
         $scope.players = response.data;
       })
     }
+    
+    $scope.positions = {'QB':true,
+                        'RB':true,
+                        'WR':true,
+                        'TE':true
+                        }
+    $scope.position_check = function(value) {
+      $scope.disabled = false
+//      console.log($scope.positions)
+      var pos = ''
+      for (var key in $scope.positions) {
+        if ($scope.positions[key]) {
+          pos += key
+        }
+      }      
+      console.log(pos)
+    }
+    
+    $scope.get_position_test = function() {
+      var uparams = '?position=wr&position=rb'
+      apiutils.get('/players/'+ uparams).then(function(response) {
+        $scope.players = response.data;
+    })
+    }
+    
+    $scope.update_position = function() {
+      var url = make_url()
+    }
+    
+    get_data('?position=QBRBWRTE')
+    
+    var active_position = 'all' 
+    $scope.is_red_zone = false
+   
+    var make_url = function(is_rz, position) {
+      var urlParams
+      var pos = ''
+      for (var key in $scope.positions) {
+        if ($scope.positions[key]) {
+          pos += key
+        }
+      }
+      urlParams = '?position=' + pos
+      if ($scope.is_red_zone) {
+        urlParams = urlParams + '&red_zone=yes'
+      }
+      get_data(urlParams)
+    }
+    
+    $scope.red_zone = function() {
+      $scope.is_red_zone = !$scope.is_red_zone
+      make_url($scope.is_red_zone, active_position)
+    }
+   
   })
   .controller('gridCtrl', function ($scope, apiutils) {
     $scope.get_single_player = function(player_id) {
       $scope.active_player = player_id
       apiutils.get('players/'+player_id).then(function(response){
         $scope.active_player_data = response.data
+//        console.log(response.data.stats)
         }
       );
       }
-
+    $scope.close = function() {
+      $scope.active_player = ''
+    }
     $scope.statChoice = function(stat) {
       makeGraphData(stat)
     }
@@ -60,15 +114,27 @@ angular.module('angularApp')
     })
   })
   .controller('SingleTeamCtrl', function($scope, apiutils, $routeParams) {
-      var get_data = function() {
-        apiutils.get('/teams/'+$routeParams.id).then(function(response) {
+      $scope.is_red_zone = false
+      var urlParams = ''
+      $scope.red_zone = function() {
+        $scope.is_red_zone = !$scope.is_red_zone
+        urlParams = $scope.is_red_zone ? '?red_zone=yes' : ''
+        get_data(true)
+      }      
+      
+      var get_data = function(redraw) {
+        apiutils.get('/teams/'+$routeParams.id+urlParams).then(function(response) {
           $scope.players = response.data
           console.log($scope.players)
+          if (redraw){
+            makeGraphData($scope.stat)
+          }
         })
       }
       get_data()
       
       $scope.statChoice = function(stat) {
+        $scope.stat = stat
         makeGraphData(stat)
       }
      

@@ -1,15 +1,28 @@
 class PlayersController < ApplicationController
 
   def index
+    stats_type = 'regular' || params[:type]
+    is_red_zone = params[:red_zone] || 'no'
+    position = params[:position].scan(/../)
+    puts position
     if params[:position]
-      @player = Player.where(:position => params[:position].upcase)
-                      .order("sorting_score DESC").limit(25)
+      if is_red_zone == 'no'
+        @player = Player.where(:position => position)
+                        .order("sorting_score DESC").limit(25)
+      else
+        @player = Player.where(:position => position)
+                        .order("rz_sorting_score DESC").limit(25)
+      end
     else
-      @player = Player.all(:order => "sorting_score DESC", :limit=>25)
+      if is_red_zone == 'no'
+        @player = Player.order('sorting_score DESC').limit(25)
+      else 
+        @player = Player.order('rz_sorting_score DESC').limit(25)
+      end
     end
     @player.each_with_index do |player, index|
       @player[index] = {'player' => player, 
-                        'totals' => player.season_totals(player.player_id)}
+                        'totals' => player.season_totals(player.player_id, stats_type, params[:red_zone])}
     end
     render json: @player
   end

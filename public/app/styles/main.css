@@ -21,3 +21,27 @@ g.arc {
 svg {
   border:3px solid black;
 }
+
+.is_red_zone {
+  background-color:red
+}
+
+.is_rz {
+  background-color:yellow;
+}
+
+.player_row.QB {
+  background-color:#FFF3BE;
+}
+
+.player_row.WR {
+  background-color:#FCBCC0;
+}
+
+.player_row.TE {
+  background-color:#B6E9AE;
+}
+
+.player_row.RB {
+  background-color:#B1A7D7;
+}

@@ -149,6 +149,7 @@ angular.module('angularApp').
     link: function(scope, element, attrs) {
       scope.$watch('stats', function() {
         if (scope.stats){
+          console.log(scope.stats)
           maker()
         }
       })

@@ -11,7 +11,8 @@ class TeamsController < ApplicationController
                           
     @players.each_with_index do |player, index|
       @players[index] = {'player' => player, 
-                         'stats' => player.season_totals(player.id)}
+                         'stats' => player.season_totals(player.id, 'REGULAR', params[:red_zone])}
+      puts 'getting '
     end
     render json: @players
   end
