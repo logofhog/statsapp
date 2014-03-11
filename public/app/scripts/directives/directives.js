@@ -30,6 +30,12 @@ angular.module('angularApp').
     }
     return single_player
   })
+  .directive('paginate', function() {
+    var paginate = {
+      templateUrl:'app/views/paginate.html'
+    }
+    return paginate
+  })
   .directive('headerlinks', function() {
     var headerlinks = {
       templateUrl:'app/views/headerlinks.html'

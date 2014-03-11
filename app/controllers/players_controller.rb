@@ -4,11 +4,14 @@ class PlayersController < ApplicationController
     stats_type = 'regular' || params[:type]
     is_red_zone = params[:red_zone] || 'no'
     position = params[:position].scan(/../)
-    puts position
+    offset = params[:page] || 0
+    page = offset.to_i * 25
+    puts page
+    
     if params[:position]
       if is_red_zone == 'no'
         @player = Player.where(:position => position)
-                        .order("sorting_score DESC").limit(25)
+                        .order("sorting_score DESC").limit(25).offset(page)
       else
         @player = Player.where(:position => position)
                         .order("rz_sorting_score DESC").limit(25)

@@ -45,3 +45,13 @@ svg {
 .player_row.RB {
   background-color:#B1A7D7;
 }
+
+#holder {
+  width:800px;
+}
+
+.paginate {
+  color:blue;
+  cursor:pointer;
+  float:right;
+}

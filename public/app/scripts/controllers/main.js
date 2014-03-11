@@ -2,7 +2,12 @@
 
 angular.module('angularApp')
   .controller('MainCtrl', function ($scope, apiutils) {
-  
+    
+    $scope.positions = {'QB':true,
+                    'RB':true,
+                    'WR':true,
+                    'TE':true}
+                    
     var get_data = function(urlparams) {
       $scope.disabled = true
       apiutils.get('/players/'+ urlparams).then(function(response) {
@@ -10,21 +15,14 @@ angular.module('angularApp')
       })
     }
     
-    $scope.positions = {'QB':true,
-                        'RB':true,
-                        'WR':true,
-                        'TE':true
-                        }
     $scope.position_check = function(value) {
       $scope.disabled = false
-//      console.log($scope.positions)
       var pos = ''
       for (var key in $scope.positions) {
         if ($scope.positions[key]) {
           pos += key
         }
-      }      
-      console.log(pos)
+      }
     }
     
     $scope.get_position_test = function() {
@@ -36,14 +34,24 @@ angular.module('angularApp')
     
     $scope.update_position = function() {
       var url = make_url()
+      get_data(url)
+    }
+    $scope.page = 0
+    
+    $scope.paginate = function(action) {
+      if (action==0){
+        $scope.page = 0
+      }
+      else {
+        $scope.page +=action
+      }
+      var url = make_url()
+      get_data(url)
     }
     
-    get_data('?position=QBRBWRTE')
-    
-    var active_position = 'all' 
     $scope.is_red_zone = false
    
-    var make_url = function(is_rz, position) {
+    var make_url = function() {
       var urlParams
       var pos = ''
       for (var key in $scope.positions) {
@@ -55,14 +63,20 @@ angular.module('angularApp')
       if ($scope.is_red_zone) {
         urlParams = urlParams + '&red_zone=yes'
       }
-      get_data(urlParams)
+      
+      if ($scope.page > 0){
+        urlParams += '&page=' + $scope.page
+      }
+      return urlParams
     }
     
     $scope.red_zone = function() {
       $scope.is_red_zone = !$scope.is_red_zone
-      make_url($scope.is_red_zone, active_position)
+      var url = make_url()
+      get_data(url)
     }
-   
+    
+    get_data('?position=QBRBWRTE')
   })
   .controller('gridCtrl', function ($scope, apiutils) {
     $scope.get_single_player = function(player_id) {
