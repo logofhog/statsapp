@@ -14,7 +14,7 @@ class PlayersController < ApplicationController
                         .order("sorting_score DESC").limit(25).offset(page)
       else
         @player = Player.where(:position => position)
-                        .order("rz_sorting_score DESC").limit(25)
+                        .order("rz_sorting_score DESC").limit(25).offset(page)
       end
     else
       if is_red_zone == 'no'
