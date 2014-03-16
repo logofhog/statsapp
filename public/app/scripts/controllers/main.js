@@ -139,13 +139,52 @@ angular.module('angularApp')
       var get_data = function(redraw) {
         apiutils.get('/teams/'+$routeParams.id+urlParams).then(function(response) {
           $scope.players = response.data
-          console.log($scope.players)
+//          console.log($scope.players)
           if (redraw){
             makeGraphData($scope.stat)
           }
         })
       }
+      
+      var get_weekly_data = function(stat) {
+        apiutils.get('/players/weekly/'+$routeParams.id + '?stat=' + stat).then(function(response) {
+          $scope.weekly_players = response.data
+          makeStackGraphData(stat)
+        })
+      }
       get_data()
+      
+      $scope.stackStatChoice = function(stat) {
+        $scope.stackstat = stat
+        get_weekly_data(stat)
+      }
+      
+      function makeStackGraphData(stat) {
+        var by_week_stats = {}
+//        console.log($scope.weekly_players)
+        for (var index in $scope.weekly_players){
+//          console.log($scope.weekly_players[index].stats)
+            for (var key in $scope.weekly_players[index].stats){
+              if (!($scope.weekly_players[index].stats[key].week in by_week_stats)){
+                by_week_stats[$scope.weekly_players[index].stats[key].week] = [{
+                  'stat': $scope.weekly_players[index].stats[key][stat],
+                  'player': $scope.weekly_players[index].player
+                  }]
+              }
+              else {
+                by_week_stats[$scope.weekly_players[index].stats[key].week].push({
+                  'stat': $scope.weekly_players[index].stats[key][stat],
+                  'player': $scope.weekly_players[index].player
+                  })
+              }
+            }
+          }
+        $scope.stackstats = []
+        for (var index in by_week_stats){
+          $scope.stackstats.push({'week': index, 'stats': by_week_stats[index]})
+        }
+      }
+      
       
       $scope.statChoice = function(stat) {
         $scope.stat = stat

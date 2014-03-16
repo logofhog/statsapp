@@ -13,20 +13,7 @@ angular.module('angularApp').
   .directive('singlePlayer', function($compile) {
     var single_player = {
         templateUrl:'app/views/singlePlayer.html',
-        restrict: 'EA',
-//        replace:true,
-//        link: function(scope, element, attrs) {
-//          var clicked = false
-//          element.bind('click', function() { 
-//            if (!clicked) {
-//              console.log(scope.active_player_data)
-//              clicked = true
-//              var newElem = angular.element('<div d3_line_chart stats="weekstats" player_id = {{active_player.player_id}} class = "{{scope.active_player_data.player_id}}"></div>')
-//              element.append(newElem);
-//              $compile(newElem)(scope);
-//              }
-//            })
-//        }
+        restrict: 'EA'
     }
     return single_player
   })
@@ -95,6 +82,7 @@ angular.module('angularApp').
     
       scope.$watch('data', function() {
         if (scope.data){
+         console.log(scope.data)
           maker()
         }
       })
@@ -163,26 +151,30 @@ angular.module('angularApp').
     var maker = function(){
 
       d3Service.d3().then(function(d3) {
-        var w = 900,
-            h = 400,
-            margin = 30
-        var y = d3.scale.linear().domain([0, get_max()]).range([h - margin, 0 + margin]),
-            x = d3.scale.linear().domain([1, 17]).range([0 + margin, w - margin])
+        var margin = {top: 20, right: 50, bottom: 20, left: 50};
+        var w = 960 - margin.left - margin.right,
+            h = 500 - margin.top - margin.bottom;
+            
+        var y = d3.scale.linear().domain([0, get_max()]).range([h - margin.top - margin.bottom, 0 + margin.top - margin.bottom]),
+            x = d3.scale.linear().domain([1, 17]).range([0 + margin.top - margin.bottom, w - margin.left - margin.right])
 
         var clear = d3.selectAll('svg').remove()
         
-        var xAxis = d3.svg.axis().scale(x).ticks(17).tickSize((-h))
-        var yAxis = d3.svg.axis().scale(y).tickSize(-w).orient("left");
+        var xAxis = d3.svg.axis().scale(x).ticks(17).tickSize(-h+(margin.top+margin.bottom))
+        var yAxis = d3.svg.axis().scale(y).tickSize(-w+(margin.left+margin.right)).orient("left");
         
 //        var svg = d3.select("'." + scope.player + "'")
         var svg = d3.select('.active_graph')
                     .append('svg')
-                    .attr('width', w+100)
-                    .attr('height', h)
+                    .attr("width", w )
+                    .attr("height", h + margin.top + margin.bottom)
+                  .append("g")
+                    .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
 //                    .attr("transform", "translate(0, 200)");
         var line = d3.svg.line()
                      .x(function(d, i) {return x(d.week);})
-                     .y(function(d) {return y(d.stat);});
+                     .y(function(d) {return y(d.stat);})
+                     .interpolate("monotone")
         
         var graph = svg.append('svg:path')
             .attr('d', line(scope.stats))                    
@@ -201,10 +193,10 @@ angular.module('angularApp').
 
             
         var xAxisGroup = svg.append('g')
-                            .attr("transform", "translate(0," + (h - margin) + ")")
+                            .attr("transform", "translate(0," + (h - margin.top- margin.bottom) + ")")
                             .call(xAxis)
         var yAxisGroup = svg.append('g')
-                            .attr("transform", "translate(" + (margin) + ",0)")
+//                            .attr("transform", "translate(" + (margin.left) + ",0)")
 //                            .attr('opacity', 0.5)
                             .call(yAxis)
                             
@@ -219,11 +211,102 @@ angular.module('angularApp').
           max_value = stat
         }
       }
-      return max_value
+      return max_value * 1.1
      }
       
     }
   }
 })
-;
+.directive('d3Stacked', function(d3Service) {
+  return {
+    restrict: 'EA',
+    scope: { data: '=data',
+             players: '=players'
+           },
+    link: function(scope, element, attrs) {
+    
+      scope.$watch('data', function() {
+        if (scope.data){
+          console.log(scope.data)
+          maker()
+        }
+      })
+      
+    var maker = function(){
+
+      d3Service.d3().then(function(d3) {
+      
+        var player_names = function() {
+            var players = []
+            for (var player in scope.players) {
+              players.push(scope.players[player].player.full_name)
+            }
+            return players
+          }
+        var margin = {top: 20, right: 50, bottom: 20, left: 50};
+        var w = 960 - margin.left - margin.right,
+            h = 500 - margin.top - margin.bottom;
+            
+        var y = d3.scale.linear().range([0, h-margin.top-margin.bottom]);
+        var x = d3.scale.linear().domain([1, 17]).range([0 + margin.top - margin.bottom, w - margin.left - margin.right])
+       
+
+        var clear = d3.selectAll('svg').remove()
+        var color = d3.scale.category20c().domain(player_names())
+        
+        var xAxis = d3.svg.axis().scale(x).ticks(17).tickSize(-h+(margin.top+margin.bottom))
+        var yAxis = d3.svg.axis().scale(y).ticks(10)
+                    .tickSize(-w+(margin.left+margin.right)).orient("left")
+                    .tickFormat(d3.format(".0%"));
+        
+        var svg = d3.select('.active_graph')
+                    .append('svg')
+                    .attr("width", w )
+                    .attr("height", h + margin.top + margin.bottom)
+                  .append("g")
+                    .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
+
+        var rect = svg.selectAll('.week')
+                      .data(scope.data)
+                    .enter().append('g')
+                      .attr('transform', function(d) {return "translate(" + x(d.week) + ",0)"})
+                      
+                      
+        rect.selectAll('rect')
+            .data(function(d) {
+              d.stats.sort(function(a, b) { return b.player - a.player; });
+              d.stats.forEach(function(e, i){
+                if (i>0){
+                  d.stats[i]['prev'] = d.stats[i-1]['stat'] + d.stats[i-1]['prev']
+                }
+                else {
+                  d.stats[i]['prev'] = 0;
+                }
+              })
+              var total = d.stats[d.stats.length-1].stat + d.stats[d.stats.length-1].prev
+              d.stats.forEach(function(a) {
+                a.stat /= total
+                a.prev /= total
+              })
+              return d.stats})
+          .enter().append('rect')          
+            .attr('width', '20')
+            .attr('y', function(d) { return y(d.prev)})
+            .attr("height", function(d) { return y(d.stat); })
+            .style("fill", function(d) {return color(d.player)})
+
+        var xAxisGroup = svg.append('g')
+                            .attr("transform", "translate(0," + (h - margin.top- margin.bottom) + ")")
+                            .call(xAxis)
+        var yAxisGroup = svg.append('g')
+                            .call(yAxis)
+                            
+        
+
+     });      
+     }
+      
+    }
+  }
+});
   

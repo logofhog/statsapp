@@ -40,6 +40,20 @@ class PlayersController < ApplicationController
       
     render json: {'player' => @player, 'stats' => player_stats}
   end
+  
+  def weekly
+    players = Player.where(:team => params[:id])
+    stats = []
+    players.each do |player|
+#      puts player.full_name
+      stat = player.weekly(params[:stat], params[:id])
+      if stat.size>0
+        stats.append({'player' => player.full_name, 'stats' => stat})
+      end
+    end
+#    puts stats.count()
+    render json: stats
+  end
     
     
 #    @player = Player.where(position: ['RB','WR'])

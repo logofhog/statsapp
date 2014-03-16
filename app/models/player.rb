@@ -21,6 +21,7 @@ class Player < ActiveRecord::Base
       stats = GameStat.where(:player_id => player_id)
     end
     i = 0
+    invalid_attrs = ['player_id', 'gsis_id', 'team', 'week']
     stats.each do |single_game|
       if i == 0
         totals = single_game
@@ -28,7 +29,7 @@ class Player < ActiveRecord::Base
       else
         if single_game.season_type.upcase == type.upcase && single_game.week != omit_week
           single_game.attributes.keys.each do |attr|
-            if attr != player_id || gsis_id || team
+            unless attr.in? invalid_attrs
                 totals[attr] = single_game[attr].to_i + totals[attr].to_i
             end
           end
@@ -36,6 +37,14 @@ class Player < ActiveRecord::Base
       end
     end
   totals
+  end
+  
+  def weekly(stat, team)
+    totals = {}
+    query = stat + '>0'
+    totals = GameStat.select(stat, 'week').where(:team => team, :season_type => 'Regular',
+                                  :player_id => self.player_id)
+                                  .where(query)
   end
   
   

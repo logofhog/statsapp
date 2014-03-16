@@ -2,10 +2,6 @@ h1 {
   color:red;
 }
 
-.tick {
-    stroke: black;
-}
-
 g {
   fill:none;
 }
@@ -16,10 +12,18 @@ g.arc {
 
 .tick line{
   opacity:0.2;
+  fill: none;
+  stroke: black;
+}
+
+.tick text{
+  fill: black;
+}
+
+.active_graph {
 }
 
 svg {
-  border:3px solid black;
 }
 
 .is_red_zone {
@@ -55,3 +59,7 @@ svg {
   cursor:pointer;
   float:right;
 }
+
+
+
+

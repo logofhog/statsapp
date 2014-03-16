@@ -15,6 +15,17 @@
 <button ng-click = "statChoice('receiving_tar')">Receiving_targets </button>
 <button ng-click = "red_zone()" ng-class="{true:'is_red_zone', false:'is_rz'}[is_red_zone]">Red Zone Only </button>
   
+<button ng-click = "stackStatChoice('passing_yds')">Passing_yds </button>
+<button ng-click = "stackStatChoice('passing_tds')">Passing_tds </button>
+<button ng-click = "stackStatChoice('rushing_yds')">Rushing_yds </button>
+<button ng-click = "stackStatChoice('rushing_tds')">Rushing_tds </button>
+<button ng-click = "stackStatChoice('rushing_att')">Rushing_atts </button>
+<button ng-click = "stackStatChoice('receiving_yds')">Receiving_yds </button>
+<button ng-click = "stackStatChoice('receiving_tds')">Receiving_tds </button>
+<button ng-click = "stackStatChoice('receiving_rec')">Receiving_rec </button>
+<button ng-click = "stackStatChoice('receiving_tar')">Receiving_targets </button>
 </div>
 
-<div d3-pie data="stats" class = 'pie' bar-height="20" bar-padding="5"></div>
+<div d3-pie data="stats" class = 'pie'></div>
+
+<div d3-stacked data="stackstats" players='players' class = 'active_graph'></div>
