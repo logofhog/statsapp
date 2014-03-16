@@ -179,10 +179,12 @@ angular.module('angularApp')
               }
             }
           }
-        $scope.stackstats = []
+        var tempstack = []
         for (var index in by_week_stats){
-          $scope.stackstats.push({'week': index, 'stats': by_week_stats[index]})
+          console.log(by_week_stats[index])
+          tempstack.push({'week': index, 'stats': by_week_stats[index]})
         }
+        $scope.stackstats = tempstack
       }
       
       

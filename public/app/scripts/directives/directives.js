@@ -235,47 +235,55 @@ angular.module('angularApp').
     var maker = function(){
 
       d3Service.d3().then(function(d3) {
-      
-        var player_names = function() {
-            var players = []
-            for (var player in scope.players) {
-              players.push(scope.players[player].player.full_name)
-            }
-            return players
-          }
-        var margin = {top: 20, right: 50, bottom: 20, left: 50};
+        var player_names = []
+//        var player_names = function() {
+//            var players = []
+//            for (var player in scope.players) {
+//              players.push(scope.players[player].player.full_name)
+//            }
+//            return players
+//          }
+        var margin = {top: 20, right: 10, bottom: 20, left: 50};
         var w = 960 - margin.left - margin.right,
             h = 500 - margin.top - margin.bottom;
             
         var y = d3.scale.linear().range([0, h-margin.top-margin.bottom]);
-        var x = d3.scale.linear().domain([1, 17]).range([0 + margin.top - margin.bottom, w - margin.left - margin.right])
+        var x = d3.scale.linear().domain([1, 17]).range([0 + margin.top - margin.bottom, (w - margin.left - margin.right)*.8])
        
 
         var clear = d3.selectAll('svg').remove()
-        var color = d3.scale.category20c().domain(player_names())
+        var color = d3.scale.category20().domain(player_names)
         
         var xAxis = d3.svg.axis().scale(x).ticks(17).tickSize(-h+(margin.top+margin.bottom))
         var yAxis = d3.svg.axis().scale(y).ticks(10)
-                    .tickSize(-w+(margin.left+margin.right)).orient("left")
+                    .tickSize((-w+(margin.left+margin.right))*.8).orient("left")
                     .tickFormat(d3.format(".0%"));
         
         var svg = d3.select('.active_graph')
                     .append('svg')
-                    .attr("width", w )
+                    .attr("width", w)
                     .attr("height", h + margin.top + margin.bottom)
                   .append("g")
-                    .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
+                    .attr("transform", "translate(" + margin.left + "," + margin.top + ")")
+
 
         var rect = svg.selectAll('.week')
                       .data(scope.data)
                     .enter().append('g')
                       .attr('transform', function(d) {return "translate(" + x(d.week) + ",0)"})
                       
-                      
         rect.selectAll('rect')
             .data(function(d) {
-              d.stats.sort(function(a, b) { return b.player - a.player; });
+//              d.stats.sort(function(a, b) { return b.player - a.player; });
+//              d.stats.forEach(function(e) {
+//                if (player_names.indexOf(e.player) ==-1){
+//                  player_names.push(e.player)
+//                }
+//              })
               d.stats.forEach(function(e, i){
+                if (player_names.indexOf(e.player) ==-1){
+                  player_names.push(e.player)
+                }
                 if (i>0){
                   d.stats[i]['prev'] = d.stats[i-1]['stat'] + d.stats[i-1]['prev']
                 }
@@ -283,14 +291,16 @@ angular.module('angularApp').
                   d.stats[i]['prev'] = 0;
                 }
               })
+              
               var total = d.stats[d.stats.length-1].stat + d.stats[d.stats.length-1].prev
               d.stats.forEach(function(a) {
                 a.stat /= total
                 a.prev /= total
               })
+//              player_names.sort()
               return d.stats})
           .enter().append('rect')          
-            .attr('width', '20')
+            .attr('width', '40')
             .attr('y', function(d) { return y(d.prev)})
             .attr("height", function(d) { return y(d.stat); })
             .style("fill", function(d) {return color(d.player)})
@@ -301,6 +311,25 @@ angular.module('angularApp').
         var yAxisGroup = svg.append('g')
                             .call(yAxis)
                             
+        var legend = svg.selectAll('.legend')
+                        .data(player_names)
+                      .enter().append('g')
+                        .attr('class', 'legend')
+                        .attr("transform", function(d, i) { return "translate(0," + i * 20 + ")"; })
+        
+        legend.append("rect")
+              .attr("x", w - margin.right-margin.left)
+              .attr("width", 18)
+              .attr("height", 18)
+              .style("fill", function(d) {return color(d)});
+              
+        legend.append("text")
+              .attr("x", w - margin.right-margin.left-5)
+              .attr("y", 9)
+              .attr("dy", ".35em")
+              .style("text-anchor", "end")
+              .style('fill', 'black')
+              .text(function(d) { return d; });
         
 
      });      
