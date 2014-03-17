@@ -155,7 +155,6 @@ angular.module('angularApp')
       get_data()
       
       $scope.stackStatChoice = function(stat) {
-        console.log($scope.is_normalize)
         $scope.stackstat = stat
         get_weekly_data(stat)
       }

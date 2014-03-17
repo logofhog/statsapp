@@ -77,7 +77,9 @@ angular.module('angularApp').
   .directive('d3Pie', function(d3Service) {
   return {
     restrict: 'EA',
-    scope: { data: '=data' },
+    scope: { data: '=data',
+             players: '=players'
+           },
     link: function(scope, element, attrs) {
     
       scope.$watch('data', function() {
@@ -91,11 +93,13 @@ angular.module('angularApp').
       d3Service.d3().then(function(d3) {
         var clear = d3.selectAll('svg').remove()
         
+        var player_legend = []
+        
         var width = 960,
             height = 500,
             radius = Math.min(width, height) / 2;
 
-        var color = d3.scale.category20c()
+        var color = d3.scale.category20c().domain(scope.players.map(function(player){return player.player.full_name}))
                    
         var arc = d3.svg.arc()
                   .outerRadius(radius - 10)
@@ -109,7 +113,7 @@ angular.module('angularApp').
               .attr("width", width)
               .attr("height", height)
             .append("g")
-              .attr("transform", "translate(" + width / 2 + "," + height / 2 + ")");
+              .attr("transform", "translate(300," + height / 2 + ")");
        
        var g = svg.selectAll(".arc")
               .data(pie(scope.data))
@@ -125,8 +129,35 @@ angular.module('angularApp').
                             return "translate(" + arc.centroid(d) + ")"; })
        .attr("dy", ".35em")
        .style("text-anchor", "middle")
-       .style("z-index", "99")
-       .text(function(d) { return (d.data.player); });
+       .text(function(d) {
+          if ((d.endAngle - d.startAngle) > 0.55) {
+            return d.data.player
+          }
+          else {
+            player_legend.push(d.data.player)
+          }
+        });
+        
+        var legend = svg.selectAll('.legend')
+                        .data(player_legend.reverse())
+                      .enter().append('g')
+                        .attr('class', 'legend')
+                        .attr("transform", function(d, i) { return "translate(0," + (-200 + (i * 20)) + ")"; })
+        
+        legend.append("rect")
+              .attr("x", 360)
+              .attr("width", 28)
+              .attr("height", 18)
+              .style("fill", function(d) {return color(d)});
+              
+        legend.append("text")
+              .attr("x", 350)
+              .attr("y", 9)
+              .attr("dy", ".35em")
+              .style("text-anchor", "end")
+              .style('fill', 'black')
+              .text(function(d) { return d; });
+//       .text(function(d) { return (d.data.player); });
 //      scope.render(scope.data)
      });      
      }
@@ -236,15 +267,12 @@ angular.module('angularApp').
       scope.$watch('normalize', function() {
         if (scope.data){
           maker()
-          console.log('inside normalize wathcher')
-          console.log(scope.normalize, scope.data)
         }
       })
     
     var maker = function(){
       var is_normal = scope.normalize;
       var temp_data = scope.data
-      console.log('maker called')
 
       d3Service.d3().then(function(d3) {
         var clear = d3.selectAll('svg').remove()
@@ -264,8 +292,8 @@ angular.module('angularApp').
         }
         
         var x = d3.scale.linear().domain([1, 17]).range([0 + margin.top - margin.bottom, (w - margin.left - margin.right)*.75])
-
-        var color = d3.scale.category20().domain(player_names)
+        
+        var color = d3.scale.category20c().domain(scope.players.map(function(player){return player.player.full_name}))
         
         var xAxis = d3.svg.axis().scale(x).ticks(17)
         
@@ -308,9 +336,7 @@ angular.module('angularApp').
               })
               
               var total = d.stats[d.stats.length-1].stat + d.stats[d.stats.length-1].prev
-//              console.log(total)
               max_stat = Math.max(total, max_stat)
-              console.log(is_normal, 'inside data')
               if (is_normal) {
                 d.stats.forEach(function(a) {
                   a.stat /= total
@@ -319,17 +345,13 @@ angular.module('angularApp').
               }
               else{
                 y.domain([0, max_stat])
-//                console.log(y(10))
               }
-//              console.log(y(1), y(0), y.domain(), y.range())
               return d.stats})
           .enter().append('rect')          
             .attr('width', '35')
             .attr('y', function(d) { return y(d.prev + d.stat)})
-            .attr('class', function() {console.log(max_stat)})
             .attr("height", function(d) { return h-y(d.stat); })
             .style("fill", function(d) {return color(d.player)})
-//            .attr("transform", "translate(20, 0)")
 
         var xAxisGroup = svg.append('g')
                             .attr("transform", "translate(20," + (h) + ")")
@@ -357,14 +379,14 @@ angular.module('angularApp').
               .style('fill', 'black')
               .text(function(d) { return d; });
        
-        var normalize_button = svg.append('text')
-                                  .attr("x", w - 200)
-                                  .attr("y", h-50)
-                                  .attr("width", 150)
-                                  .attr("height", 40)
-                                  .style('fill', 'black')
-                                  .text("Normalize")
-                                  .attr("class", "normalize_button")
+//        var normalize_button = svg.append('text')
+//                                  .attr("x", w - 200)
+//                                  .attr("y", h-50)
+//                                  .attr("width", 150)
+//                                  .attr("height", 40)
+//                                  .style('fill', 'black')
+//                                  .text("Normalize")
+//                                  .attr("class", "normalize_button")
 
                                   
      });      
