@@ -155,9 +155,19 @@ angular.module('angularApp')
       get_data()
       
       $scope.stackStatChoice = function(stat) {
+        console.log($scope.is_normalize)
         $scope.stackstat = stat
         get_weekly_data(stat)
       }
+      
+      $scope.is_normalize = false
+      
+      $scope.toggle_normalize = function() {
+        console.log('toggling')
+        makeStackGraphData($scope.stackstat) 
+        $scope.is_normalize = !$scope.is_normalize
+      }
+      
       
       function makeStackGraphData(stat) {
         var by_week_stats = {}
@@ -181,7 +191,7 @@ angular.module('angularApp')
           }
         var tempstack = []
         for (var index in by_week_stats){
-          console.log(by_week_stats[index])
+//          console.log(by_week_stats[index])
           tempstack.push({'week': index, 'stats': by_week_stats[index]})
         }
         $scope.stackstats = tempstack

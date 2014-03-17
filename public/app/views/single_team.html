@@ -24,8 +24,10 @@
 <button ng-click = "stackStatChoice('receiving_tds')">Receiving_tds </button>
 <button ng-click = "stackStatChoice('receiving_rec')">Receiving_rec </button>
 <button ng-click = "stackStatChoice('receiving_tar')">Receiving_targets </button>
+<button ng-click = "toggle_normalize()">Normalize</button>
 </div>
 
 <div d3-pie data="stats" class = 'pie'></div>
 
-<div d3-stacked data="stackstats" players='players' class = 'active_graph'></div>
+<div d3-stacked data="stackstats" players='players' normalize='is_normalize' class = 'active_graph'></div>
+
