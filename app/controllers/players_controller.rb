@@ -54,7 +54,13 @@ class PlayersController < ApplicationController
 #    puts stats.count()
     render json: stats
   end
-    
+  
+  def search
+    players = Player.where("lower(full_name) like ?", "%#{params[:query].downcase}%")
+                    .limit(10).order('sorting_score DESC')
+    puts players
+    render json:players
+  end
     
 #    @player = Player.where(position: ['RB','WR'])
 #    @player.each do |player, index|

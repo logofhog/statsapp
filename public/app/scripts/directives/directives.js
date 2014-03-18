@@ -29,6 +29,22 @@ angular.module('angularApp').
     }
     return headerlinks
   })
+  .directive('autocomplete', function($timeout) {
+    var autocomplete = {
+      restrict: 'EA',
+      scope: {
+      postfunction: '=postfunction'
+      }, 
+      link: function(scope, element, attrs){
+        console.log('link directive autocomplete')
+        element.on('keyup', function() {
+          scope.postfunction()
+          console.log('on input')
+        })
+      }
+    }
+    return autocomplete
+  })
   .directive('d3Bars', function(d3Service) {
     return {
       restrict: 'EA',
@@ -191,6 +207,9 @@ angular.module('angularApp').
 
         var clear = d3.selectAll('svg').remove()
         
+//        var color = d3.scale.category20c().domain(scope.players.map(function(player){return player.player.full_name}))
+        var color = d3.scale.category10().domain(get_players())
+        
         var xAxis = d3.svg.axis().scale(x).ticks(17).tickSize(-h+(margin.top+margin.bottom))
         var yAxis = d3.svg.axis().scale(y).tickSize(-w+(margin.left+margin.right)).orient("left");
         
@@ -211,15 +230,10 @@ angular.module('angularApp').
         var graph = svg.selectAll('.player')
             .data(scope.stats)
             .enter().append('g')
-//            .attr('d', function(d) {console.log(d.stats)})
-//            .attr('d', line(function(d) {return d.stats}))                    
-//            .attr('stroke', 'blue')
-//            .attr('fill', 'none')
-//            
 
         graph.append("path")
           .attr('d', function(d) {return line(d.stats)})
-          .style("stroke", 'black')
+          .style("stroke", function(d) {return color(d.player)})
           
         var point = graph.append('g')
             
@@ -230,31 +244,41 @@ angular.module('angularApp').
           .attr("r", 4)
           .attr('cx', function(d,i){return x(d.week)})
           .attr('cy', function (d) {return y(d.stat)})
-          
-//        var points = svg.selectAll('circle')
-//                        .attr("stroke", "black")
-//                        .data(scope.stats)
-//                        .enter()
-//                        .append('circle')
-//                        .attr('d', function (d){return d.stats})
-//        
-//        points.selectAll('circle')
-//                        .enter().append('circle')
-//                        .attr("stroke", "black")
-//                        .attr("r", 4)
-//                        .attr('cx', function(d,i){return x(d.week)})
-//                        .attr('cy', function (d) {return y(d.stat)})
-
             
         var xAxisGroup = svg.append('g')
                             .attr("transform", "translate(0," + (h - margin.top- margin.bottom) + ")")
                             .call(xAxis)
         var yAxisGroup = svg.append('g')
-//                            .attr("transform", "translate(" + (margin.left) + ",0)")
-//                            .attr('opacity', 0.5)
                             .call(yAxis)
                             
+        var legend = svg.selectAll('.legend')
+                        .data(get_players())
+                      .enter().append('g')
+                        .attr('class', 'legend')
+                        .attr("transform", function(d, i) { return "translate(0," + i * 20 + ")"; })
+        
+        legend.append("rect")
+              .attr("x", w - margin.right-margin.left-10)
+              .attr("width", 28)
+              .attr("height", 18)
+              .style("fill", function(d) {return color(d)});
+              
+        legend.append("text")
+              .attr("x", w - margin.right-margin.left-10)
+              .attr("y", 9)
+              .attr("dy", ".35em")
+              .style("text-anchor", "end")
+              .style('fill', 'black')
+              .text(function(d) { return d; });
+                            
      });      
+     }
+     var get_players = function (){
+     var players = []
+       for (var p in scope.stats){
+        players.push(scope.stats[p].player)
+       }
+     return players
      }
      
      var get_max = function() {

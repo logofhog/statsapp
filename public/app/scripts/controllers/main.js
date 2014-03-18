@@ -104,6 +104,18 @@ angular.module('angularApp')
         }
       );
     }
+    $scope.choice = ''
+    $scope.players_choice_names = []
+    $scope.get_auto_names = function(partial) {
+      console.log('getting names')      
+      apiutils.get('playersearch/?query=' + partial).then(function(response){
+        $scope.players_choice_names = response.data.map(function(p){return p.full_name})
+        console.log($scope.players_choice_names)
+//        $scope.players_choices = response.data
+//        console.log($scope.players_choices)
+      })
+      return $scope.players_choice_names
+    }
     
     $scope.active_stat
     $scope.statChoice = function(stat) {

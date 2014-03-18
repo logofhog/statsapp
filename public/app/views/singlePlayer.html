@@ -11,6 +11,18 @@
 <button ng-click = "statChoice('receiving_tar')">Receiving_targets </button>
 <span ng-click='close()'>[close]</span>
 <button ng-click = "addPlayer()">Add player </button>
+
+<input type="text" ng-model="asyncSelected" placeholder="Locations loaded via $http" 
+typeahead="suggest for suggest in get_auto_names($viewValue) | filter:$viewValue" 
+typeahead-loading="loadingLocations" class="form-control">
+
+<!--
+<input type="text" autocomplete postfunction="get_auto_names" list="_players_choices">
+            <datalist id="_players_choices">
+             <select ng-model='choice' ng-options="k as v for (k,v) in players_choice_names">
+             </select>
+</datalist>
+-->
 </div>
 <div >
 <!--

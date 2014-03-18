@@ -3,6 +3,7 @@ Statsapp::Application.routes.draw do
     resources :teams, :only => [:index, :show]
 
     get '/players/weekly/:id', :to => 'players#weekly'
+    get '/playersearch/', :to => 'players#search'
     
   # The priority is based upon order of creation: first created -> highest priority.
   # See how all your routes lay out with "rake routes".
