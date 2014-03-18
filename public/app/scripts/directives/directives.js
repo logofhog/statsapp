@@ -130,7 +130,7 @@ angular.module('angularApp').
        .attr("dy", ".35em")
        .style("text-anchor", "middle")
        .text(function(d) {
-          if ((d.endAngle - d.startAngle) > 0.55) {
+          if ((d.endAngle - d.startAngle) > 0.5) {
             return d.data.player
           }
           else {
@@ -174,7 +174,7 @@ angular.module('angularApp').
     link: function(scope, element, attrs) {
       scope.$watch('stats', function() {
         if (scope.stats){
-          console.log(scope.stats)
+//          console.log(scope.stats)
           maker()
         }
       })
@@ -203,24 +203,47 @@ angular.module('angularApp').
                     .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
 //                    .attr("transform", "translate(0, 200)");
         var line = d3.svg.line()
+//                     .x(function(d, i) {return x(d.week);})
                      .x(function(d, i) {return x(d.week);})
                      .y(function(d) {return y(d.stat);})
                      .interpolate("monotone")
         
-        var graph = svg.append('svg:path')
-            .attr('d', line(scope.stats))                    
-            .attr('stroke', 'blue')
-            .attr('fill', 'none')
+        var graph = svg.selectAll('.player')
+            .data(scope.stats)
+            .enter().append('g')
+//            .attr('d', function(d) {console.log(d.stats)})
+//            .attr('d', line(function(d) {return d.stats}))                    
+//            .attr('stroke', 'blue')
+//            .attr('fill', 'none')
+//            
+
+        graph.append("path")
+          .attr('d', function(d) {return line(d.stats)})
+          .style("stroke", 'black')
+          
+        var point = graph.append('g')
             
-        var circle = svg.selectAll('circle')
-                        .attr("stroke", "black")
-                        .data(scope.stats)
-                        .enter()
-                        .append('svg:circle')
-                        .attr("stroke", "black")
-                        .attr("r", 4)
-                        .attr('cx', function(d,i){return x(d.week)})
-                        .attr('cy', function (d) {return y(d.stat)})
+        point.selectAll('circle')
+          .data(function(d) {return d.stats})
+          .enter().append('circle')
+          .attr("stroke", "black")
+          .attr("r", 4)
+          .attr('cx', function(d,i){return x(d.week)})
+          .attr('cy', function (d) {return y(d.stat)})
+          
+//        var points = svg.selectAll('circle')
+//                        .attr("stroke", "black")
+//                        .data(scope.stats)
+//                        .enter()
+//                        .append('circle')
+//                        .attr('d', function (d){return d.stats})
+//        
+//        points.selectAll('circle')
+//                        .enter().append('circle')
+//                        .attr("stroke", "black")
+//                        .attr("r", 4)
+//                        .attr('cx', function(d,i){return x(d.week)})
+//                        .attr('cy', function (d) {return y(d.stat)})
 
             
         var xAxisGroup = svg.append('g')
@@ -236,10 +259,12 @@ angular.module('angularApp').
      
      var get_max = function() {
       var max_value = 0;
-      for (var stat in scope.stats){
-        stat = parseInt(scope.stats[stat].stat)
-        if (stat > max_value) {
-          max_value = stat
+      for (var index in scope.stats){
+        for (var stat in scope.stats[index].stats){
+          stat = parseInt(scope.stats[index].stats[stat].stat)
+          if (stat > max_value) {
+            max_value = stat
+          }
         }
       }
       return max_value * 1.1
@@ -298,7 +323,7 @@ angular.module('angularApp').
         var xAxis = d3.svg.axis().scale(x).ticks(17)
         
         if (is_normal){
-          var yAxis = d3.svg.axis().scale(y).ticks(10)
+          var yAxis = d3.svg.axis().scale(y)
                     .tickSize((-w+(margin.left+margin.right))*.79).orient("left")
                     .tickFormat(d3.format(".0%"));
                     }
@@ -344,7 +369,7 @@ angular.module('angularApp').
                 })
               }
               else{
-                y.domain([0, max_stat])
+                y.domain([0, max_stat*1.15])
               }
               return d.stats})
           .enter().append('rect')          

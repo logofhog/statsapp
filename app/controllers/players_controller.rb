@@ -46,7 +46,7 @@ class PlayersController < ApplicationController
     stats = []
     players.each do |player|
 #      puts player.full_name
-      stat = player.weekly(params[:stat], params[:id])
+      stat = player.weekly(params[:stat], params[:id], params[:red_zone])
       if stat.size>0
         stats.append({'player' => player.full_name, 'stats' => stat})
       end

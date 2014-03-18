@@ -39,12 +39,19 @@ class Player < ActiveRecord::Base
   totals
   end
   
-  def weekly(stat, team)
+  def weekly(stat, team, is_red_zone)
+    puts is_red_zone
     totals = {}
     query = stat + '>0'
-    totals = GameStat.select(stat, 'week').where(:team => team, :season_type => 'Regular',
+    if is_red_zone == 'no'
+      totals = GameStat.select(stat, 'week').where(:team => team, :season_type => 'Regular',
                                   :player_id => self.player_id)
                                   .where(query)
+    else
+      totals = RzGameStat.select(stat, 'week').where(:team => team, :season_type => 'Regular',
+                                  :player_id => self.player_id)
+                                  .where(query)
+    end                                  
   end
   
   

@@ -79,10 +79,16 @@ angular.module('angularApp')
     get_data('?position=QBRBWRTE')
   })
   .controller('gridCtrl', function ($scope, apiutils) {
+    
+//    var players_to_graph = []
+    var players_to_graph = []
     $scope.get_single_player = function(player_id) {
+      players_to_graph = []
       $scope.active_player = player_id
       apiutils.get('players/'+player_id).then(function(response){
         $scope.active_player_data = response.data
+        players_to_graph.push($scope.active_player_data)
+        console.log(players_to_graph)
 //        console.log(response.data.stats)
         }
       );
@@ -90,23 +96,42 @@ angular.module('angularApp')
     $scope.close = function() {
       $scope.active_player = ''
     }
+    
+    $scope.addPlayer = function() {
+      apiutils.get('players/'+'00-0020531').then(function(response){
+        players_to_graph.push(response.data)
+        makeGraphData($scope.active_stat)
+        }
+      );
+    }
+    
+    $scope.active_stat
     $scope.statChoice = function(stat) {
+      $scope.active_stat = stat
       makeGraphData(stat)
     }
+    
+    $scope.players_on_graph = []
      
     function makeGraphData(stat) {    
-     var stats = []
-     //$scope.active_player_data.stats[index].single_game_stats[stat] > 0 --- this was in if statement for some reason
-     for (var index in $scope.active_player_data.stats) {
-      if ($scope.active_player_data.stats[index].game.season_type == 'Regular') {
-       stats.push({'stat': $scope.active_player_data.stats[index].
-                                  single_game_stats[stat], 
-                   'week': $scope.active_player_data.stats[index].
-                                  game.week})
-          } //end if
-        } // end for
-     stats.sort(function(a,b) { return a.week - b.week })
-     $scope.weekstats = stats
+     $scope.players_on_graph = []
+//     console.log(players_to_graph)
+     for (var player_g in players_to_graph) {
+      var stats = []
+       for (var index in players_to_graph[player_g].stats) {
+          if (players_to_graph[player_g].stats[index].game.season_type == 'Regular') {
+           stats.push({'stat': players_to_graph[player_g].stats[index].
+                                      single_game_stats[stat], 
+                       'week': players_to_graph[player_g].stats[index].
+                                      game.week})
+              } //end if
+          } // end for
+        stats.sort(function(a,b) { return a.week - b.week })
+      
+        $scope.players_on_graph.push({'player':players_to_graph[player_g].player.full_name,
+                                          'stats': stats})
+      }
+      $scope.players_on_graph_data = $scope.players_on_graph
     }//end makeGraphData()
     
     $scope.order_weeks = function(game) {
@@ -128,90 +153,159 @@ angular.module('angularApp')
     })
   })
   .controller('SingleTeamCtrl', function($scope, apiutils, $routeParams) {
-      $scope.is_red_zone = false
+      $scope.is_red_zone = false;
+      $scope.is_weekly = false;
+      $scope.stat = ''
       var urlParams = ''
-      $scope.red_zone = function() {
+      var active_stat,
+          rz_active_stat
+      
+      var make_url = function() {
+        urlParams = $scope.is_weekly ? '/players/weekly/'+$routeParams.id : '/teams/'+$routeParams.id
+        urlParams += $scope.is_red_zone ? '?red_zone=yes' : '?red_zone=no'
+        urlParams += ($scope.stat !=='') ? '&stat=' + $scope.stat : ''
+        return urlParams
+      }
+      
+      $scope.red_zone = function() {                            //togglers
         $scope.is_red_zone = !$scope.is_red_zone
-        urlParams = $scope.is_red_zone ? '?red_zone=yes' : ''
-        get_data(true)
-      }      
+        dispatch()
+       }      
+      
+      $scope.is_weekly_toggle = function() {
+        $scope.is_weekly = !$scope.is_weekly
+        dispatch()
+      }
+      
+      $scope.statChoice = function(stat) {
+        $scope.stat = stat
+        dispatch()
+      }
+      
+      var dispatch = function() {  //refactor this, want to find best way
+        
+        if (!$scope.is_red_zone && !$scope.is_weekly){
+           makeGraphData($scope.stat)
+        }
+        if ($scope.is_red_zone && !$scope.is_weekly && $scope.rz_players){
+           makeGraphData($scope.stat)
+        }
+        if ($scope.is_red_zone && !$scope.is_weekly && !$scope.rz_players){
+           get_data(true)
+        }
+        if ($scope.is_red_zone && $scope.is_weekly && $scope.rz_weekly_players && ($scope.stat == rz_active_stat)) {
+           makeStackGraphData($scope.stat)
+        }
+        if ($scope.is_red_zone && $scope.is_weekly && !$scope.rz_weekly_players && ($scope.stat != rz_active_stat)) {
+           get_data(true)
+        } 
+        if ($scope.is_red_zone && $scope.is_weekly && $scope.rz_weekly_players && ($scope.stat != rz_active_stat)) {
+          get_data(true)
+        }
+        if ($scope.is_red_zone && $scope.is_weekly && $scope.rz_weekly_players && ($scope.stat == rz_active_stat)) {
+          makeStackGraphData($scope.stat)
+        }
+        if (!$scope.is_red_zone && $scope.is_weekly && $scope.weekly_players && ($scope.stat == active_stat)) {
+          makeStackGraphData($scope.stat)
+        }
+        if (!$scope.is_red_zone && $scope.is_weekly && $scope.weekly_players && ($scope.stat !== active_stat)) {
+          get_data(true)
+        }
+        if (!$scope.is_red_zone && $scope.is_weekly && !$scope.weekly_players) {
+          get_data(true)
+        }
+
+      }
       
       var get_data = function(redraw) {
-        apiutils.get('/teams/'+$routeParams.id+urlParams).then(function(response) {
-          $scope.players = response.data
-//          console.log($scope.players)
-          if (redraw){
-            makeGraphData($scope.stat)
+        var url = make_url()
+        apiutils.get(url).then(function(response) {
+          if (!$scope.is_weekly) {
+              if (!$scope.is_red_zone){
+                $scope.players = response.data
+              }
+              else {
+                $scope.rz_players = response.data
+              }
+            }
+          else {
+            if (!$scope.is_red_zone){
+                $scope.weekly_players = response.data
+              }
+              else {
+                $scope.rz_weekly_players = response.data
+              }
+          }
+          if (redraw) {
+            if ($scope.is_weekly){
+              makeStackGraphData($scope.stat)
+            }
+            else {
+              makeGraphData($scope.stat)
+            }
           }
         })
       }
-      
-      var get_weekly_data = function(stat) {
-        apiutils.get('/players/weekly/'+$routeParams.id + '?stat=' + stat).then(function(response) {
-          $scope.weekly_players = response.data
-          makeStackGraphData(stat)
-        })
-      }
       get_data()
-      
-      $scope.stackStatChoice = function(stat) {
-        $scope.stackstat = stat
-        get_weekly_data(stat)
-      }
-      
-      $scope.is_normalize = false
-      
-      $scope.toggle_normalize = function() {
-        console.log('toggling')
-        makeStackGraphData($scope.stackstat) 
-        $scope.is_normalize = !$scope.is_normalize
-      }
-      
-      
+
       function makeStackGraphData(stat) {
+        
         var by_week_stats = {}
-//        console.log($scope.weekly_players)
-        for (var index in $scope.weekly_players){
-//          console.log($scope.weekly_players[index].stats)
-            for (var key in $scope.weekly_players[index].stats){
-              if (!($scope.weekly_players[index].stats[key].week in by_week_stats)){
-                by_week_stats[$scope.weekly_players[index].stats[key].week] = [{
-                  'stat': $scope.weekly_players[index].stats[key][stat],
-                  'player': $scope.weekly_players[index].player
+        var player_objects = []
+        if ($scope.is_red_zone) {
+          player_objects = $scope.rz_weekly_players
+          rz_active_stat =$scope.stat
+        }
+        else {
+          player_objects = $scope.weekly_players
+          active_stat = $scope.stat
+        }
+        for (var index in player_objects){
+            for (var key in player_objects[index].stats){
+              if (!(player_objects[index].stats[key].week in by_week_stats)){
+                by_week_stats[player_objects[index].stats[key].week] = [{
+                  'stat': player_objects[index].stats[key][stat],
+                  'player': player_objects[index].player
                   }]
               }
               else {
-                by_week_stats[$scope.weekly_players[index].stats[key].week].push({
-                  'stat': $scope.weekly_players[index].stats[key][stat],
-                  'player': $scope.weekly_players[index].player
+                by_week_stats[player_objects[index].stats[key].week].push({
+                  'stat': player_objects[index].stats[key][stat],
+                  'player': player_objects[index].player
                   })
               }
             }
           }
         var tempstack = []
         for (var index in by_week_stats){
-//          console.log(by_week_stats[index])
           tempstack.push({'week': index, 'stats': by_week_stats[index]})
         }
         $scope.stackstats = tempstack
-      }
+      } // end makeStackGraphData
       
-      
-      $scope.statChoice = function(stat) {
-        $scope.stat = stat
-        makeGraphData(stat)
-      }
-     
       function makeGraphData(stat) {    
+        var player_objects = []
+        if ($scope.is_red_zone) {
+          player_objects = $scope.rz_players
+        }
+        else {
+          player_objects = $scope.players
+        }
         $scope.stats = []
-        for (var index in $scope.players) {
-          if ($scope.players[index].stats[stat] > 0) {
-            $scope.stats.push({'player': $scope.players[index].player.full_name, 
-                               'stat':   $scope.players[index].stats[stat]});
-  //          sum_yds += $scope.players[index].stats.receiving_yds
+        for (var index in player_objects) {
+          if (player_objects[index].stats[stat] > 0) {
+            $scope.stats.push({'player': player_objects[index].player.full_name, 
+                               'stat':   player_objects[index].stats[stat]});
           } //end if
         } // end for
     }//end makeGraphData()
+    
+    $scope.is_normalize = false
+      
+    $scope.toggle_normalize = function() {
+      makeStackGraphData($scope.stat) 
+      $scope.is_normalize = !$scope.is_normalize
+    }
       
     })
   
