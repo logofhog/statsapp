@@ -80,39 +80,44 @@ angular.module('angularApp')
   })
   .controller('gridCtrl', function ($scope, apiutils) {
     
-//    var players_to_graph = []
     var players_to_graph = []
+
     $scope.get_single_player = function(player_id) {
       players_to_graph = []
       $scope.active_player = player_id
       apiutils.get('players/'+player_id).then(function(response){
         $scope.active_player_data = response.data
         players_to_graph.push($scope.active_player_data)
-        console.log(players_to_graph)
-//        console.log(response.data.stats)
         }
       );
-      }
+    }
+      
     $scope.close = function() {
       $scope.active_player = ''
     }
     
-    $scope.addPlayer = function() {
-      apiutils.get('players/'+'00-0020531').then(function(response){
-        players_to_graph.push(response.data)
-        makeGraphData($scope.active_stat)
+    var check_for_duplicates = function(player) {
+      for (var p in players_to_graph){
+        if (players_to_graph[p].player.full_name == player.full_name){
+          return false
         }
-      );
+      }
+      return true
     }
-    $scope.choice = ''
+
+    $scope.addPlayer = function(to_add) {
+      apiutils.get('players/'+to_add.id).then(function(response){
+        if (check_for_duplicates(response.data.player)) {
+          players_to_graph.push(response.data)
+          makeGraphData($scope.active_stat)
+        }
+      });
+    }
+
     $scope.players_choice_names = []
     $scope.get_auto_names = function(partial) {
-      console.log('getting names')      
       apiutils.get('playersearch/?query=' + partial).then(function(response){
-        $scope.players_choice_names = response.data.map(function(p){return p.full_name})
-        console.log($scope.players_choice_names)
-//        $scope.players_choices = response.data
-//        console.log($scope.players_choices)
+        $scope.players_choice_names = response.data.map(function(p){return {'name': p.full_name, 'id': p.player_id}})
       })
       return $scope.players_choice_names
     }
@@ -127,7 +132,6 @@ angular.module('angularApp')
      
     function makeGraphData(stat) {    
      $scope.players_on_graph = []
-//     console.log(players_to_graph)
      for (var player_g in players_to_graph) {
       var stats = []
        for (var index in players_to_graph[player_g].stats) {
