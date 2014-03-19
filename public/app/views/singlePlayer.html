@@ -1,21 +1,34 @@
 <div>
 <div class = 'position_links'>
-<button ng-click = "statChoice('passing_yds')">Passing_yds </button>
-<button ng-click = "statChoice('passing_tds')">Passing_tds </button></p>
-<button ng-click = "statChoice('rushing_yds')">Rushing_yds </button>
-<button ng-click = "statChoice('rushing_tds')">Rushing_tds </button>
-<button ng-click = "statChoice('rushing_att')">Rushing_atts </button>
-<button ng-click = "statChoice('receiving_yds')">Receiving_yds </button></p>
-<button ng-click = "statChoice('receiving_tds')">Receiving_tds </button>
-<button ng-click = "statChoice('receiving_rec')">Receiving_rec </button>
-<button ng-click = "statChoice('receiving_tar')">Receiving_targets </button>
-<span ng-click='close()'>[close]</span>
+<div ng-click='close()' class="btn btn-danger close_btn">Close</div>
+<div class = 'passing_single'>
+  
+  <span ng-click = "statChoice('passing_yds')" class="btn btn-primary btn-mini">Yards </span>
+  <span ng-click = "statChoice('passing_tds')" class="btn btn-primary btn-mini">Touchdowns </span>
+  <span class= 'stat_header'>Passing</span>
+</div>
+<div class = 'rushing_single'>
+  
+  <span ng-click = "statChoice('rushing_yds')" class="btn btn-primary btn-mini"'>Yards </span>
+  <span ng-click = "statChoice('rushing_tds')" class="btn btn-primary btn-mini">Touchdowns </span>
+  <span ng-click = "statChoice('rushing_att')" class="btn btn-primary btn-mini">Attempts </span>
+  <span class= 'stat_header'>Rushing</span>
+</div>
+<div class = 'receiving_single'>
+  <span ng-click = "statChoice('receiving_yds')" class="btn btn-primary btn-mini">Yards </span>
+  <span ng-click = "statChoice('receiving_tds')" class="btn btn-primary btn-mini">Touchdowns </span>
+  <span ng-click = "statChoice('receiving_rec')" class="btn btn-primary btn-mini">Receptions </span>
+  <span ng-click = "statChoice('receiving_tar')" class="btn btn-primary btn-mini">Targets </span>
+  <span class= 'stat_header'>Receiving</span>
+</div>
+
 
 
 <input type="text" ng-model="asyncSelected" placeholder="enter player name to compare..." 
 typeahead="suggest as suggest.name for suggest in get_auto_names($viewValue) | filter:$viewValue" 
 typeahead-loading="loadingLocations" typeahead-min-length='3' 
-typeahead-on-select = 'addPlayer(asyncSelected)' class="form-control">
+typeahead-on-select = 'addPlayer(asyncSelected)' class="form-control compare"
+ng-show="show_compare">
 
 <!--
 <input type="text" autocomplete postfunction="get_auto_names" list="_players_choices">

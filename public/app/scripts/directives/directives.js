@@ -226,7 +226,8 @@ angular.module('angularApp').
                      .x(function(d, i) {return x(d.week);})
                      .y(function(d) {return y(d.stat);})
                      .interpolate("monotone")
-        
+                     
+                     
         var graph = svg.selectAll('.player')
             .data(scope.stats)
             .enter().append('g')
@@ -234,6 +235,7 @@ angular.module('angularApp').
         graph.append("path")
           .attr('d', function(d) {return line(d.stats)})
           .style("stroke", function(d) {return color(d.player)})
+          .style("stroke-width", 4)
           
         var point = graph.append('g')
             

@@ -20,7 +20,7 @@
     <tbody ng-repeat ='player in players'>
       <tr ng-class='player.player.position' class='player_row'>
       <td>{{($index+1)+(page*25)}}</td>
-      <td ng-click = get_single_player(player.player.player_id)><button>{{player.player.full_name}}</button></td>
+      <td ng-click = get_single_player(player.player.player_id)><span class='player_main'>{{player.player.full_name}}</span></td>
       <td>{{player.totals.passing_yds}}</td><td>{{player.totals.passing_tds}}</td>
       <td>{{player.totals.passing_int}}</td><td>{{player.totals.passing_attempts}}</td>
       <td>{{player.totals.passing_completions}}</td><td>{{player.totals.rushing_yds}}</td> 

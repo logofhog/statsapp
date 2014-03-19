@@ -24,6 +24,7 @@ g.arc {
 }
 
 svg {
+  margin-bottom:50px;
 }
 
 .is_red_zone {
@@ -60,6 +61,53 @@ svg {
   float:right;
 }
 
+.player_main {
+text-decoration:underline
+}
+
+.player_main:hover {
+color:red;
+cursor: pointer;
+}
+
+.compare {
+  margin:10px;
+  width:30%;
+}
+
+.single_player_stat_select {
+  text-decoration:underline;
+  cursor: pointer;
+}
+
+.single_player_stat_select:hover {
+  color:red;
+  cursor: pointer;
+}
+
+.passing_single {
+  background-color:#F1F8BB;
+  margin:10px;
+}
+
+.rushing_single {
+  background-color:#DEA7BC;
+  margin:10px;
+}
+
+.receiving_single {
+  background-color:#A7B1C2;
+  margin:10px;
+}
+
+.stat_header {
+  float:right;
+  font-size: 30px;
+}
+
+.close_btn {
+  margin:10px;
+}
 
 
 

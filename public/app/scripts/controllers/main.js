@@ -83,6 +83,7 @@ angular.module('angularApp')
     var players_to_graph = []
 
     $scope.get_single_player = function(player_id) {
+      $scope.show_compare = false;
       players_to_graph = []
       $scope.active_player = player_id
       apiutils.get('players/'+player_id).then(function(response){
@@ -93,6 +94,7 @@ angular.module('angularApp')
     }
       
     $scope.close = function() {
+      
       $scope.active_player = ''
     }
     
@@ -124,6 +126,7 @@ angular.module('angularApp')
     
     $scope.active_stat
     $scope.statChoice = function(stat) {
+      $scope.show_compare = true;
       $scope.active_stat = stat
       makeGraphData(stat)
     }
