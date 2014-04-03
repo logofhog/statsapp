@@ -445,5 +445,157 @@ angular.module('angularApp').
       
     }
   }
+})
+.directive('playerCompGraph', function(d3Service) {
+  return {
+    restrict: 'EA',
+    scope: { data: '=data',
+             multipliers: '=multipliers',
+             multiples: '=multiples'
+    },
+    
+//    template: '<button ng-show="data" ng-model="is_normalized">normalize</button>',
+    link: function(scope, element, attrs) {
+    
+      scope.$watch('data', function() {
+        if (scope.data){
+          console.log(scope.data)
+          maker()
+        }
+      })
+      
+    scope.$watch('multiples', function() {
+        console.log('multiples changed')
+        if (scope.data){
+          console.log(scope.data)
+          maker()
+        }
+      }, true)
+      
+    var maker = function(){
+      var is_normal = scope.normalize;
+      var temp_data = scope.data
+
+      d3Service.d3().then(function(d3) {
+        var clear = d3.selectAll('svg').remove()
+        var clearrect = d3.selectAll('rect').remove()
+        var max_stat = 0;
+
+        var margin = {top: 20, right: 10, bottom: 100, left: 50};
+        var w = 960 - margin.left - margin.right,
+            h = 500 - margin.top - margin.bottom;
+            
+//        var y = d3.scale.linear().range([h, 0]).domain([0,scope.data[0].player.sorting_score * 1.1])
+        var y = d3.scale.linear().range([h, 0])
+//        var x = d3.scale.ordinal().domain([1, 25]).range([0 + margin.top - margin.bottom, (w - margin.left - margin.right)*.75])
+        var x = d3.scale.ordinal().domain(scope.data.map(function(d) {return (d.player.full_name)})).rangeRoundBands([0, w-160], .1)
+        
+//        var color = d3.scale.category20c().domain(scope.players.map(function(player){return player.player.full_name}))
+        var color = d3.scale.category10()
+        
+//        var xAxis = d3.svg.axis().scale(x).domain(scope.data.map(function(d) {return (d.player.full_name)}))
+        var xAxis = d3.svg.axis().scale(x)
+        
+        var yAxis = d3.svg.axis().scale(y).ticks(10)
+                    .tickSize((-w+(margin.left+margin.right))*0.87).orient("left")
+        
+        var svg = d3.select('.comp_graph')
+                    .append('svg')
+                    .attr("width", w)
+                    .attr("height", h + margin.top + margin.bottom)
+                  .append("g")
+                    .attr("transform", "translate(" + margin.left + "," + margin.top + ")")
+
+
+        var rect = svg.selectAll('svg')
+                      .data(scope.data)
+                    .enter().append('g')
+                      .attr('transform', function(d, i) {
+                      return "translate(" + x(d.player.full_name) + ",0)"})
+                      
+        var valid_stat_keys = ['passing_yds', 'passing_tds', 'passing_int',
+                               'receiving_yds', 'receiving_tds', 'receiving_rec',
+                               'rushing_yds', 'rushing_tds']
+        var max_y1 = 0
+        
+        rect.selectAll('rect')
+            .data(function(d) {
+              var single_rect = []
+              var single_rect_index = 0
+              var multiply = scope.multipliers
+              for (var k in d.totals){
+                if (valid_stat_keys.indexOf(k) > -1) {
+                  var single_stat_rect = {}
+                  single_stat_rect['stat'] = k
+                  if (single_rect_index > 0){
+                     single_stat_rect['y1'] = single_rect[single_rect_index-1]['y1'] + multiply(k, d.totals[k])
+                  }
+                  else {
+                    single_stat_rect['y1'] = multiply(k, d.totals[k])
+                  }
+                  single_stat_rect['y0'] = (single_rect_index > 0) ? single_rect[single_rect_index-1]['y1'] : 0
+                  single_rect_index += 1
+                  single_rect.push(single_stat_rect)
+                  max_y1 = Math.max(max_y1, single_stat_rect['y1'])
+                  
+                }
+                
+              }
+//              console.log(single_rect)
+              scope.multipliers()
+              y.domain([0, max_y1*1.1])
+              return single_rect
+              })
+          .enter().append('rect')          
+            .attr('width', '25')
+            .attr('y', function(d) {return y(d.y1)} )
+            .attr("height", function(d) {return h-y(d.y1- d.y0)})
+            .style("fill", function(d) {
+            return color(d.stat)})
+
+        var xAxisGroup = svg.append('g')
+                            .attr("transform", "translate(0," + (h) + ")")
+                            .call(xAxis)
+                            .selectAll('text')
+                            .style("text-anchor", "end")
+                            .attr('transform', 'rotate(-45)')
+//                            .attr("transform", "translate(20," + (h) + ")")
+                            
+        var yAxisGroup = svg.append('g')
+                            .call(yAxis)
+        
+        var labels = {'passing_yds': 'Passing Yards', 
+                      'passing_tds': 'Passing TDs',
+                      'passing_int': 'Passing INT',
+                      'receiving_yds': 'Receiving Yards',
+                      'receiving_tds': 'Receiving TDs',
+                      'receiving_rec': 'Receptions',
+                      'rushing_yds': 'Rushing Yards', 
+                      'rushing_tds': 'Rushing TDs'
+                      }
+                  
+        var legend = svg.selectAll('.legend')
+                        .data(valid_stat_keys)
+                      .enter().append('g')
+                        .attr('class', 'legend')
+                        .attr("transform", function(d, i) { return "translate(0," + i * 20 + ")"; })
+        
+        legend.append("rect")
+              .attr("x", w - margin.right-margin.left-10)
+              .attr("width", 28)
+              .attr("height", 18)
+              .style("fill", function(d) {return color(d)});
+              
+        legend.append("text")
+              .attr("x", w - margin.right-margin.left-10)
+              .attr("y", 9)
+              .attr("dy", ".35em")
+              .style("text-anchor", "end")
+              .style('fill', 'black')
+              .text(function(d) { return labels[d]; });
+      }); //end d3Service
+    }
+  }
+  }
 });
   

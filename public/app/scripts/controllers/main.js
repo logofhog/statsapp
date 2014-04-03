@@ -15,6 +15,35 @@ angular.module('angularApp')
       })
     }
     
+    var valid_stat_keys = ['passing_yds', 'passing_int', 'passing_tds',
+                               'receiving_yds', 'receiving_tds', 'receiving_rec',
+                               'rushing_yds', 'rushing_tds']
+    
+    $scope.multiples = {'passing_yds': 30,
+                       'passing_int': -2,
+                       'passing_tds': 6,
+                       'receiving_yds': 15,
+                       'receiving_tds': 6,
+                       'receiving_rec': 0.5,
+                       'rushing_yds': 10,
+                       'rushing_tds': 6
+                      }
+    
+    $scope.multipliers = function(stat, value) {
+      var computed_multiples = {
+       'passing_yds': 1/$scope.multiples['passing_yds'], 
+       'passing_int': $scope.multiples['passing_int'],
+       'passing_tds': $scope.multiples['passing_tds'],
+       'receiving_yds': 1/$scope.multiples['receiving_yds'],
+       'receiving_tds': $scope.multiples['receiving_tds'],
+       'receiving_rec': $scope.multiples['receiving_rec'],
+       'rushing_yds': 1/$scope.multiples['rushing_yds'],
+       'rushing_tds': $scope.multiples['rushing_tds'],
+      }
+//      console.log(multiples[stat], value, multiples[stat] * value)
+      return computed_multiples[stat] * value
+    }
+    
     $scope.position_check = function(value) {
       $scope.disabled = false
       var pos = ''
@@ -23,13 +52,6 @@ angular.module('angularApp')
           pos += key
         }
       }
-    }
-    
-    $scope.get_position_test = function() {
-      var uparams = '?position=wr&position=rb'
-      apiutils.get('/players/'+ uparams).then(function(response) {
-        $scope.players = response.data;
-    })
     }
     
     $scope.update_position = function() {
@@ -50,7 +72,7 @@ angular.module('angularApp')
     }
     
     $scope.is_red_zone = false
-   
+    $scope.onePosition = false
     var make_url = function() {
       var urlParams
       var pos = ''
@@ -59,6 +81,10 @@ angular.module('angularApp')
           pos += key
         }
       }
+      
+      $scope.onePosition = (pos.length == 2) ? true: false;
+      console.log($scope.onePosition)
+      
       urlParams = '?position=' + pos
       if ($scope.is_red_zone) {
         urlParams = urlParams + '&red_zone=yes'
@@ -95,7 +121,7 @@ angular.module('angularApp')
       
     $scope.close = function() {
       
-      $scope.active_player = ''
+    $scope.active_player = ''
     }
     
     var check_for_duplicates = function(player) {
