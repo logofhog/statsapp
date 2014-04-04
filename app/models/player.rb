@@ -7,18 +7,17 @@ class Player < ActiveRecord::Base
   
   self.primary_key = :player_id
   
-  def season_totals(player_id = :player_id, type = 'REGULAR', red_zone = 'no')
+  def season_totals(player_id = :player_id, type = 'REGULAR', red_zone = 'no', omit_weeks =[])
     totals = {}
     omit_week = 18 # so that week 17 will be included
     if type == 'without'
       omit_17 = 17
     end
     if red_zone == 'yes'
-      puts 'red zone yes'
       stats = RzGameStat.where(:player_id => player_id)
     else
-      puts 'red zone no'
-      stats = GameStat.where(:player_id => player_id)
+      puts omit_weeks
+      stats = GameStat.where(:player_id => player_id).where("week NOT IN (?)", omit_weeks)
     end
     i = 0
     invalid_attrs = ['player_id', 'gsis_id', 'team', 'week']

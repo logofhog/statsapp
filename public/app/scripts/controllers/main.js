@@ -1,7 +1,18 @@
 'use strict';
 
 angular.module('angularApp')
-  .controller('MainCtrl', function ($scope, apiutils) {
+  .run(function($rootScope){
+    $rootScope.multiples = {'passing_yds': 30,
+                       'passing_int': 0,
+                       'passing_tds': 6,
+                       'receiving_yds': 15,
+                       'receiving_tds': 6,
+                       'receiving_rec': 0.5,
+                       'rushing_yds': 10,
+                       'rushing_tds': 6
+                      }
+  })
+  .controller('MainCtrl', function ($scope, $rootScope, apiutils) {
     
     $scope.positions = {'QB':true,
                     'RB':true,
@@ -15,30 +26,53 @@ angular.module('angularApp')
       })
     }
     
+     $scope.sort_weeks = function(val) {
+      console.log(val)
+      return 0
+      }
+      
+//      $scope.weeks = {
+//        'week':1,
+//        'value':, 
+//      }
+    
+    $scope.weeks = []
+    var init = function() {
+      for (var i= 1; i<=17; i++) {
+        $scope.weeks.push({
+          'week':i,
+          "value":true
+        })
+        }
+      console.log($scope.weeks)
+    }()
+    
+   
+    
     var valid_stat_keys = ['passing_yds', 'passing_int', 'passing_tds',
                                'receiving_yds', 'receiving_tds', 'receiving_rec',
                                'rushing_yds', 'rushing_tds']
     
-    $scope.multiples = {'passing_yds': 30,
-                       'passing_int': -2,
-                       'passing_tds': 6,
-                       'receiving_yds': 15,
-                       'receiving_tds': 6,
-                       'receiving_rec': 0.5,
-                       'rushing_yds': 10,
-                       'rushing_tds': 6
-                      }
+//    $scope.multiples = {'passing_yds': 30,
+//                       'passing_int': -2,
+//                       'passing_tds': 6,
+//                       'receiving_yds': 15,
+//                       'receiving_tds': 6,
+//                       'receiving_rec': 0.5,
+//                       'rushing_yds': 10,
+//                       'rushing_tds': 6
+//                      }
     
     $scope.multipliers = function(stat, value) {
       var computed_multiples = {
-       'passing_yds': 1/$scope.multiples['passing_yds'], 
-       'passing_int': $scope.multiples['passing_int'],
-       'passing_tds': $scope.multiples['passing_tds'],
-       'receiving_yds': 1/$scope.multiples['receiving_yds'],
-       'receiving_tds': $scope.multiples['receiving_tds'],
-       'receiving_rec': $scope.multiples['receiving_rec'],
-       'rushing_yds': 1/$scope.multiples['rushing_yds'],
-       'rushing_tds': $scope.multiples['rushing_tds'],
+       'passing_yds': 1/$rootScope.multiples['passing_yds'], 
+       'passing_int': $rootScope.multiples['passing_int'],
+       'passing_tds': $rootScope.multiples['passing_tds'],
+       'receiving_yds': 1/$rootScope.multiples['receiving_yds'],
+       'receiving_tds': $rootScope.multiples['receiving_tds'],
+       'receiving_rec': $rootScope.multiples['receiving_rec'],
+       'rushing_yds': 1/$rootScope.multiples['rushing_yds'],
+       'rushing_tds': $rootScope.multiples['rushing_tds'],
       }
 //      console.log(multiples[stat], value, multiples[stat] * value)
       return computed_multiples[stat] * value
@@ -93,6 +127,21 @@ angular.module('angularApp')
       if ($scope.page > 0){
         urlParams += '&page=' + $scope.page
       }
+      var omit_weeks = '0'
+      for (var week in $scope.weeks){
+//        console.log($scope.weeks[week].value)
+        if (!$scope.weeks[week].value) {
+          if (omit_weeks != '0') {
+            omit_weeks += ',' + $scope.weeks[week].week
+          }
+          else {
+            omit_weeks = $scope.weeks[week].week
+          }
+          console.log(omit_weeks)
+        }
+      }
+      urlParams += '&omit_weeks='+omit_weeks
+      
       return urlParams
     }
     
@@ -102,7 +151,7 @@ angular.module('angularApp')
       get_data(url)
     }
     
-    get_data('?position=QBRBWRTE')
+    get_data(make_url())
   })
   .controller('gridCtrl', function ($scope, apiutils) {
     
