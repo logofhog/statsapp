@@ -28,6 +28,7 @@
   <button ng-click="update_position()" ng-disabled='disabled'>UPDATE</button>
 
   <button ng-class="{true:'is_red_zone', false:'is_rz'}[is_red_zone]"s ng-click="red_zone()">Red Zone Only</button>
+  <button ng-class="{true:'is_red_zone', false:'is_rz'}[is_red_zone]"s ng-click="sum_or_avg()">sum/avg</button>
   <span paginate>
     
   </span>
@@ -41,12 +42,12 @@
       <tr ng-class='player.position' class='player_row'>
       <td>{{($index+1)+(page*25)}}</td>
       <td ng-click = get_single_player(player.player_id)><span class='player_main'>{{player.full_name}}</span></td>
-      <td>{{player.passing_yds}}</td><td>{{player.passing_tds}}</td>
-      <td>{{player.passing_int}}</td><td>{{player.passing_attempts}}</td>
-      <td>{{player.passing_completions}}</td><td>{{player.rushing_yds}}</td> 
-      <td>{{player.rushing_tds}}</td><td>{{player.rushing_att}}</td> 
-      <td>{{player.receiving_yds}}</td><td>{{player.receiving_tds}}</td> 
-      <td>{{player.receiving_rec}}</td> <td>{{player.receiving_tar}}</td>
+      <td>{{player.passing_yds | number:numfilter }}</td><td>{{player.passing_tds | number:numfilter}}</td>
+      <td>{{player.passing_int | number:numfilter}}</td><td>{{player.passing_attempts | number:numfilter}}</td>
+      <td>{{player.passing_completions | number:numfilter}}</td><td>{{player.rushing_yds | number:numfilter}}</td> 
+      <td>{{player.rushing_tds | number:numfilter }}</td><td>{{player.rushing_att | number:numfilter}}</td> 
+      <td>{{player.receiving_yds | number:numfilter}}</td><td>{{player.receiving_tds | number:numfilter}}</td> 
+      <td>{{player.receiving_rec | number:numfilter}}</td> <td>{{player.receiving_tar | number:numfilter}}</td>
       </tr>
       <tr ng-show = 'player.player_id == active_player'> 
         <td colspan="14">

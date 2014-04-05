@@ -3,7 +3,7 @@
 angular.module('angularApp')
   .run(function($rootScope){
     $rootScope.multiples = { 'passing_yds': 25,
-                             'passing_int': 0,
+                             'passing_int': -1,
                              'passing_tds': 4,
                              'receiving_yds': 10,
                              'receiving_tds': 6,
@@ -24,11 +24,17 @@ angular.module('angularApp')
       apiutils.get('/players/'+ urlparams).then(function(response) {
         $scope.players = response.data;
         console.log($scope.players)
+        if (($scope.players[0].rushing_yds+$scope.players[0].receiving_tar)%1 != 0) {
+          $scope.numfilter = 2
+        }
+        else {
+          $scope.numfilter = 0
+        }
+        
       })
     }
     
      $scope.sort_weeks = function(val) {
-      console.log(val)
       return 0
       }
       
@@ -94,6 +100,11 @@ angular.module('angularApp')
       var url = make_url()
       get_data(url)
     }
+    $scope.is_sum = true;
+    $scope.sum_or_avg = function() {
+      $scope.is_sum = !$scope.is_sum
+      get_data(make_url())
+    }
     
     $scope.is_red_zone = false
     $scope.onePosition = false
@@ -130,6 +141,7 @@ angular.module('angularApp')
         }
       }
       urlParams += '&omit_weeks='+omit_weeks
+      urlParams += '&is_sum=' + $scope.is_sum
       
       return urlParams
     }
