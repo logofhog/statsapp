@@ -5,32 +5,31 @@ class PlayersController < ApplicationController
     is_red_zone = params[:red_zone] || 'no'
     position = params[:position].scan(/../)
     omit_weeks = params[:omit_weeks].split(/,/) || []
-    
     offset = params[:page] || 0
     page = offset.to_i * 25
-    puts omit_weeks
-    puts 'aaaaaaaaaaaaaaaaaaaaaaaaaa'
     
-    if params[:position]
-      if is_red_zone == 'no'
-        @player = Player.where(:position => position)
-                        .order("sorting_score DESC").limit(25).offset(page)
-      else
-        @player = Player.where(:position => position)
-                        .order("rz_sorting_score DESC").limit(25).offset(page)
-      end
-    else
-      if is_red_zone == 'no'
-        @player = Player.order('sorting_score DESC').limit(25)
-      else 
-        @player = Player.order('rz_sorting_score DESC').limit(25)
-      end
-    end
-    @player.each_with_index do |player, index|
-      @player[index] = {'player' => player, 
-                        'totals' => player.season_totals(player.player_id, 
-                                    stats_type, params[:red_zone], omit_weeks)}
-    end
+    @player = Player.season_totals(stats_type, is_red_zone, omit_weeks, position, page)
+    
+#    if params[:position]
+#      if is_red_zone == 'no'
+#        @player = Player.where(:position => position)
+#                        .order("sorting_score DESC").limit(25).offset(page)
+#      else
+#        @player = Player.where(:position => position)
+#                        .order("rz_sorting_score DESC").limit(25).offset(page)
+#      end
+#    else
+#      if is_red_zone == 'no'
+#        @player = Player.order('sorting_score DESC').limit(25)
+#      else 
+#        @player = Player.order('rz_sorting_score DESC').limit(25)
+#      end
+#    end
+#    @player.each_with_index do |player, index|
+#      @player[index] = {'player' => player, 
+#                        'totals' => player.season_totals(player.player_id, 
+#                                    stats_type, params[:red_zone], omit_weeks)}
+#    end
     render json: @player
   end
   

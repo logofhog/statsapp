@@ -2,27 +2,28 @@
 
 angular.module('angularApp')
   .run(function($rootScope){
-    $rootScope.multiples = {'passing_yds': 30,
-                       'passing_int': 0,
-                       'passing_tds': 6,
-                       'receiving_yds': 15,
-                       'receiving_tds': 6,
-                       'receiving_rec': 0.5,
-                       'rushing_yds': 10,
-                       'rushing_tds': 6
-                      }
+    $rootScope.multiples = { 'passing_yds': 25,
+                             'passing_int': 0,
+                             'passing_tds': 4,
+                             'receiving_yds': 10,
+                             'receiving_tds': 6,
+                             'receiving_rec': 0.5,
+                             'rushing_yds': 10,
+                             'rushing_tds': 6
+                            }
   })
   .controller('MainCtrl', function ($scope, $rootScope, apiutils) {
     
     $scope.positions = {'QB':true,
-                    'RB':true,
-                    'WR':true,
-                    'TE':true}
-                    
+                        'RB':true,
+                        'WR':true,
+                        'TE':true}
+
     var get_data = function(urlparams) {
       $scope.disabled = true
       apiutils.get('/players/'+ urlparams).then(function(response) {
         $scope.players = response.data;
+        console.log($scope.players)
       })
     }
     
@@ -44,7 +45,6 @@ angular.module('angularApp')
           "value":true
         })
         }
-      console.log($scope.weeks)
     }()
     
    
@@ -52,16 +52,6 @@ angular.module('angularApp')
     var valid_stat_keys = ['passing_yds', 'passing_int', 'passing_tds',
                                'receiving_yds', 'receiving_tds', 'receiving_rec',
                                'rushing_yds', 'rushing_tds']
-    
-//    $scope.multiples = {'passing_yds': 30,
-//                       'passing_int': -2,
-//                       'passing_tds': 6,
-//                       'receiving_yds': 15,
-//                       'receiving_tds': 6,
-//                       'receiving_rec': 0.5,
-//                       'rushing_yds': 10,
-//                       'rushing_tds': 6
-//                      }
     
     $scope.multipliers = function(stat, value) {
       var computed_multiples = {
@@ -74,7 +64,7 @@ angular.module('angularApp')
        'rushing_yds': 1/$rootScope.multiples['rushing_yds'],
        'rushing_tds': $rootScope.multiples['rushing_tds'],
       }
-//      console.log(multiples[stat], value, multiples[stat] * value)
+
       return computed_multiples[stat] * value
     }
     
@@ -117,7 +107,6 @@ angular.module('angularApp')
       }
       
       $scope.onePosition = (pos.length == 2) ? true: false;
-      console.log($scope.onePosition)
       
       urlParams = '?position=' + pos
       if ($scope.is_red_zone) {
@@ -163,6 +152,7 @@ angular.module('angularApp')
       $scope.active_player = player_id
       apiutils.get('players/'+player_id).then(function(response){
         $scope.active_player_data = response.data
+        console.log(response.data)
         players_to_graph.push($scope.active_player_data)
         }
       );

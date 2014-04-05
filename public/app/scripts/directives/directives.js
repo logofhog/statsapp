@@ -115,7 +115,7 @@ angular.module('angularApp').
             height = 500,
             radius = Math.min(width, height) / 2;
 
-        var color = d3.scale.category20c().domain(scope.players.map(function(player){return player.player.full_name}))
+        var color = d3.scale.category20c().domain(scope.players.map(function(player){return player.full_name}))
                    
         var arc = d3.svg.arc()
                   .outerRadius(radius - 10)
@@ -196,8 +196,8 @@ angular.module('angularApp').
       })
 
     var maker = function(){
+    d3Service.d3().then(function(d3) {
 
-      d3Service.d3().then(function(d3) {
         var margin = {top: 20, right: 50, bottom: 20, left: 50};
         var w = 960 - margin.left - margin.right,
             h = 500 - margin.top - margin.bottom;
@@ -205,17 +205,16 @@ angular.module('angularApp').
         var y = d3.scale.linear().domain([0, get_max()]).range([h - margin.top - margin.bottom, 0 + margin.top - margin.bottom]),
             x = d3.scale.linear().domain([1, 17]).range([0 + margin.top - margin.bottom, w - margin.left - margin.right])
 
-        var clear = d3.selectAll('svg').remove()
+        var clear = d3.selectAll('.active_svg').remove()
         
-//        var color = d3.scale.category20c().domain(scope.players.map(function(player){return player.player.full_name}))
         var color = d3.scale.category10().domain(get_players())
         
         var xAxis = d3.svg.axis().scale(x).ticks(17).tickSize(-h+(margin.top+margin.bottom))
         var yAxis = d3.svg.axis().scale(y).tickSize(-w+(margin.left+margin.right)).orient("left");
         
-//        var svg = d3.select("'." + scope.player + "'")
         var svg = d3.select('.active_graph')
                     .append('svg')
+                    .attr("class", 'active_svg' )
                     .attr("width", w )
                     .attr("height", h + margin.top + margin.bottom)
                   .append("g")
@@ -273,7 +272,7 @@ angular.module('angularApp').
               .style('fill', 'black')
               .text(function(d) { return d; });
                             
-     });      
+     });   
      }
      var get_players = function (){
      var players = []
@@ -459,15 +458,12 @@ angular.module('angularApp').
     
       scope.$watch('data', function() {
         if (scope.data){
-          console.log(scope.data)
           maker()
         }
       })
       
     scope.$watch('multiples', function() {
-        console.log('multiples changed')
         if (scope.data){
-          console.log(scope.data)
           maker()
         }
       }, true)
@@ -488,7 +484,7 @@ angular.module('angularApp').
 //        var y = d3.scale.linear().range([h, 0]).domain([0,scope.data[0].player.sorting_score * 1.1])
         var y = d3.scale.linear().range([h, 0])
 //        var x = d3.scale.ordinal().domain([1, 25]).range([0 + margin.top - margin.bottom, (w - margin.left - margin.right)*.75])
-        var x = d3.scale.ordinal().domain(scope.data.map(function(d) {return (d.player.full_name)})).rangeRoundBands([0, w-160], .1)
+        var x = d3.scale.ordinal().domain(scope.data.map(function(d) {return (d.full_name)})).rangeRoundBands([0, w-160], .1)
         
 //        var color = d3.scale.category20c().domain(scope.players.map(function(player){return player.player.full_name}))
         var color = d3.scale.category10()
@@ -511,7 +507,7 @@ angular.module('angularApp').
                       .data(scope.data)
                     .enter().append('g')
                       .attr('transform', function(d, i) {
-                      return "translate(" + x(d.player.full_name) + ",0)"})
+                      return "translate(" + x(d.full_name) + ",0)"})
                       
         var valid_stat_keys = ['passing_yds', 'passing_tds', 'passing_int',
                                'receiving_yds', 'receiving_tds', 'receiving_rec',
@@ -523,15 +519,15 @@ angular.module('angularApp').
               var single_rect = []
               var single_rect_index = 0
               var multiply = scope.multipliers
-              for (var k in d.totals){
+              for (var k in d){
                 if (valid_stat_keys.indexOf(k) > -1) {
                   var single_stat_rect = {}
                   single_stat_rect['stat'] = k
                   if (single_rect_index > 0){
-                     single_stat_rect['y1'] = single_rect[single_rect_index-1]['y1'] + multiply(k, d.totals[k])
+                     single_stat_rect['y1'] = single_rect[single_rect_index-1]['y1'] + multiply(k, d[k])
                   }
                   else {
-                    single_stat_rect['y1'] = multiply(k, d.totals[k])
+                    single_stat_rect['y1'] = multiply(k, d[k])
                   }
                   single_stat_rect['y0'] = (single_rect_index > 0) ? single_rect[single_rect_index-1]['y1'] : 0
                   single_rect_index += 1
