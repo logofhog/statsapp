@@ -100,10 +100,10 @@ angular.module('angularApp').
     
       scope.$watch('data', function() {
         if (scope.data){
-         console.log(scope.data)
+//         console.log(scope.data)
           maker()
         }
-      })
+      }, true)
       
     var maker = function(){
       d3Service.d3().then(function(d3) {
@@ -303,7 +303,8 @@ angular.module('angularApp').
     restrict: 'EA',
     scope: { data: '=data',
              players: '=players',
-             normalize: '=normalize'
+             normalize: '=normalize',
+             stat_to_show: '=stat'
            },
 //    template: '<button ng-show="data" ng-model="is_normalized">normalize</button>',
     link: function(scope, element, attrs) {
@@ -312,9 +313,15 @@ angular.module('angularApp').
         if (scope.data){
           maker()
         }
-      })
+      }, true)
       
       scope.$watch('normalize', function() {
+        if (scope.data){
+          maker()
+        }
+      })
+      
+      scope.$watch('stat_to_show', function() {
         if (scope.data){
           maker()
         }
@@ -343,7 +350,7 @@ angular.module('angularApp').
         
         var x = d3.scale.linear().domain([1, 17]).range([0 + margin.top - margin.bottom, (w - margin.left - margin.right)*.75])
         
-        var color = d3.scale.category20c().domain(scope.players.map(function(player){return player.player.full_name}))
+        var color = d3.scale.category20c().domain(scope.players.map(function(player){return player.full_name}))
         
         var xAxis = d3.svg.axis().scale(x).ticks(17)
         
@@ -366,29 +373,28 @@ angular.module('angularApp').
 
 
         var rect = svg.selectAll('.week')
-                      .data(temp_data)
+                      .data(scope.data)
                     .enter().append('g')
                       .attr('transform', function(d) {return "translate(" + x(d.week) + ",0)"})
                       
                       
         rect.selectAll('rect')
             .data(function(d) {
-              d.stats.forEach(function(e, i){
-                if (player_names.indexOf(e.player) ==-1){
-                  player_names.push(e.player)
+              d.stat.forEach(function(e, i){
+                if (player_names.indexOf(e.full_name) ==-1 && parseInt(d.stat[i][scope.stat_to_show])>0){
+                  player_names.push(e.full_name)
                 }
                 if (i>0){
-                  d.stats[i]['prev'] = d.stats[i-1]['stat'] + d.stats[i-1]['prev']
+                  d.stat[i]['prev'] = parseInt(d.stat[i-1][scope.stat_to_show]) + parseInt(d.stat[i-1]['prev'])
                 }
                 else {
-                  d.stats[i]['prev'] = 0;
+                  d.stat[i]['prev'] = 0;
                 }
               })
-              
-              var total = d.stats[d.stats.length-1].stat + d.stats[d.stats.length-1].prev
+              var total = parseInt(d.stat[d.stat.length-1][scope.stat_to_show]) + parseInt(d.stat[d.stat.length-1].prev)
               max_stat = Math.max(total, max_stat)
               if (is_normal) {
-                d.stats.forEach(function(a) {
+                d.stat.forEach(function(a) {
                   a.stat /= total
                   a.prev /= total
                 })
@@ -396,12 +402,12 @@ angular.module('angularApp').
               else{
                 y.domain([0, max_stat*1.15])
               }
-              return d.stats})
+              return d.stat})
           .enter().append('rect')          
             .attr('width', '35')
-            .attr('y', function(d) { return y(d.prev + d.stat)})
-            .attr("height", function(d) { return h-y(d.stat); })
-            .style("fill", function(d) {return color(d.player)})
+            .attr('y', function(d) { return y(d.prev + parseInt(d[scope.stat_to_show]))})
+            .attr("height", function(d) { return h-y(parseInt(d[scope.stat_to_show])); })
+            .style("fill", function(d) {return color(d.full_name)})
 
         var xAxisGroup = svg.append('g')
                             .attr("transform", "translate(20," + (h) + ")")
@@ -428,17 +434,7 @@ angular.module('angularApp').
               .style("text-anchor", "end")
               .style('fill', 'black')
               .text(function(d) { return d; });
-       
-//        var normalize_button = svg.append('text')
-//                                  .attr("x", w - 200)
-//                                  .attr("y", h-50)
-//                                  .attr("width", 150)
-//                                  .attr("height", 40)
-//                                  .style('fill', 'black')
-//                                  .text("Normalize")
-//                                  .attr("class", "normalize_button")
-
-                                  
+                                 
      });      
      }
       

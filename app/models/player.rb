@@ -49,7 +49,6 @@ class Player < ActiveRecord::Base
   end
   
   def weekly(stat, team, is_red_zone)
-    puts is_red_zone
     totals = {}
     query = stat + '>0'
     if is_red_zone == 'no'

@@ -1,5 +1,5 @@
-<div ng-repeat = "player in players | orderBy: 'player.position'">
-  {{player.player.full_name}} {{player.player.position}} {{player.player.college}}
+<div ng-repeat = "player in players | orderBy: 'position'">
+  {{player.full_name}} {{player.position}}
 </div>
 
 <div class = 'position_links'>
@@ -20,5 +20,5 @@
 
 <div d3-pie data="stats" players='players' class = 'pie'></div>
 
-<div d3-stacked data="stackstats" players='players' normalize='is_normalize' class = 'active_graph'></div>
+<div d3-stacked data="stackstats" players='players' stat='stat' normalize='is_normalize' class = 'active_graph'></div>
 

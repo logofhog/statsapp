@@ -6,14 +6,12 @@ class TeamsController < ApplicationController
   end
   
   def show
-    @players = Player.all(:conditions => ["team = ? AND sorting_score > 0", 
-                          params[:id]]) 
-                          
-    @players.each_with_index do |player, index|
-      @players[index] = {'player' => player, 
-                         'stats' => player.season_totals(player.id, 'REGULAR', params[:red_zone])}
-    end
+    @players = Team.season_totals(params[:id], params[:red_zone])
     render json: @players
   end
-  
+
+  def as_weekly 
+    @players = Team.weekly_totals(params[:team], params[:red_zone])
+    render json: @players
+  end
 end

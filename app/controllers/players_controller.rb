@@ -6,8 +6,7 @@ class PlayersController < ApplicationController
     position = params[:position].scan(/../)
     omit_weeks = params[:omit_weeks].split(/,/) || []
     is_sum = params[:is_sum]
-    offset = params[:page] || 0
-    page = offset.to_i * 25
+    page = (params[:page] || 0).to_i * 25
     
     @player = Player.season_totals(stats_type, is_red_zone, omit_weeks, position, page, is_sum)
     
