@@ -1,0 +1,21 @@
+<div class="well"> 
+  <ul class="nav nav-stacked" id="sidebar">
+    <li><button ng-click="update_position()" ng-disabled='disabled'>UPDATE</button></li>
+    <li><span class = 'player_row QB'> QB <input ng-click="position_check('QB')" type="checkbox" ng-model="positions.QB"></span></li>
+    <li><span class = 'player_row RB'>RB <input ng-click="position_check('RB')" type="checkbox" ng-model="positions.RB"></span></li>
+    <li><span class = 'player_row WR'>WR <input ng-click="position_check('WR')" type="checkbox" ng-model="positions.WR"></span></li>
+    <li><span class = 'player_row TE'>TE <input ng-click="position_check('TE')" type="checkbox" ng-model="positions.TE"></span></li>
+    <li><button ng-class="{true:'is_red_zone', false:'is_rz'}[is_red_zone]"s ng-click="red_zone()">Red Zone Only</button></li>
+    <li><button ng-class="{true:'is_red_zone', false:'is_rz'}[!is_sum]"s ng-click="sum_or_avg()">sum/avg</button></li>
+    <li><button ng-model="editpoints" ng-click="editpoints = !editpoints">Edit Point Values</button>
+      <div fanpts ng-show="editpoints" ></div>
+    </li>
+    <li><button ng-model="editweeks" ng-click="editweeks = !editweeks">Edit Weeks</button>
+      <ul ng-show="editweeks">
+        <li ng-repeat="gweek in weeks">
+        <input type="checkbox" ng-model="gweek.value">week {{gweek.week}}</li>
+        <button ng-click="update_position()" ng-disabled='disabled'>UPDATE</button>
+      </ul>
+    </li>
+  </ul>
+</div>

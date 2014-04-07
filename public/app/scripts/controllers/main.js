@@ -22,6 +22,7 @@ angular.module('angularApp')
     var get_data = function(urlparams) {
       $scope.disabled = true
       apiutils.get('/players/'+ urlparams).then(function(response) {
+        $scope.disabled = false
         $scope.players = response.data;
         console.log($scope.players)
         if (($scope.players[0].rushing_yds+$scope.players[0].receiving_tar)%1 != 0) {
@@ -37,11 +38,6 @@ angular.module('angularApp')
      $scope.sort_weeks = function(val) {
       return 0
       }
-      
-//      $scope.weeks = {
-//        'week':1,
-//        'value':, 
-//      }
     
     $scope.weeks = []
     var init = function() {
@@ -75,7 +71,6 @@ angular.module('angularApp')
     }
     
     $scope.position_check = function(value) {
-      $scope.disabled = false
       var pos = ''
       for (var key in $scope.positions) {
         if ($scope.positions[key]) {
@@ -100,6 +95,7 @@ angular.module('angularApp')
       var url = make_url()
       get_data(url)
     }
+    
     $scope.is_sum = true;
     $scope.sum_or_avg = function() {
       $scope.is_sum = !$scope.is_sum
@@ -129,7 +125,6 @@ angular.module('angularApp')
       }
       var omit_weeks = '0'
       for (var week in $scope.weeks){
-//        console.log($scope.weeks[week].value)
         if (!$scope.weeks[week].value) {
           if (omit_weeks != '0') {
             omit_weeks += ',' + $scope.weeks[week].week
@@ -137,7 +132,6 @@ angular.module('angularApp')
           else {
             omit_weeks = $scope.weeks[week].week
           }
-          console.log(omit_weeks)
         }
       }
       urlParams += '&omit_weeks='+omit_weeks
@@ -270,11 +264,19 @@ angular.module('angularApp')
       
       $scope.is_weekly_toggle = function() {
         $scope.is_weekly = !$scope.is_weekly
+        if ($scope.is_weekly){
+          $scope.weekly_stat = $scope.stat
+        }
         dispatch()
       }
       
       $scope.statChoice = function(stat) {
-        $scope.stat = stat
+        if ($scope.is_weekly) {
+          $scope.weekly_stat = stat
+        }
+        else {
+          $scope.stat = stat
+        }
         dispatch()
       }
       
@@ -289,28 +291,18 @@ angular.module('angularApp')
         if ($scope.is_red_zone && !$scope.is_weekly && !$scope.rz_players){
            get_data(true)
         }
-        if ($scope.is_red_zone && $scope.is_weekly && $scope.rz_weekly_players && ($scope.stat == rz_active_stat)) {
+        if ($scope.is_red_zone && $scope.is_weekly && $scope.rz_weekly_players) {
            makeStackGraphData($scope.stat)
         }
-        if ($scope.is_red_zone && $scope.is_weekly && !$scope.rz_weekly_players && ($scope.stat != rz_active_stat)) {
+        if ($scope.is_red_zone && $scope.is_weekly && !$scope.rz_weekly_players) {
            get_data(true)
         } 
-        if ($scope.is_red_zone && $scope.is_weekly && $scope.rz_weekly_players && ($scope.stat != rz_active_stat)) {
-          get_data(true)
-        }
-        if ($scope.is_red_zone && $scope.is_weekly && $scope.rz_weekly_players && ($scope.stat == rz_active_stat)) {
+        if (!$scope.is_red_zone && $scope.is_weekly && $scope.weekly_players) {
           makeStackGraphData($scope.stat)
-        }
-        if (!$scope.is_red_zone && $scope.is_weekly && $scope.weekly_players && ($scope.stat == active_stat)) {
-          makeStackGraphData($scope.stat)
-        }
-        if (!$scope.is_red_zone && $scope.is_weekly && $scope.weekly_players && ($scope.stat !== active_stat)) {
-          get_data(true)
         }
         if (!$scope.is_red_zone && $scope.is_weekly && !$scope.weekly_players) {
           get_data(true)
         }
-
       }
       
       var get_data = function(redraw) {
@@ -346,10 +338,16 @@ angular.module('angularApp')
 
       function makeStackGraphData(stat) {
         $scope.stackstats = []
-        var player_objects = $scope.weekly_players
-        
+        var player_objects 
+        if ($scope.is_red_zone) {
+          player_objects = $scope.rz_weekly_players
+        }
+        else {
+          player_objects = $scope.weekly_players
+        }
         for (var i=1; i<=17; i++){
           var week_grouped_players = []
+
           for (var key in player_objects) {
             if(player_objects[key].week == i) {
               week_grouped_players.push(player_objects[key])
@@ -360,48 +358,9 @@ angular.module('angularApp')
                            stat: week_grouped_players})
           }
         }
-//        console.log(temp_stack)
-
       }
         
-        
-//        console.log($scope.weekly_players, 'asdasdasdasdad')
-//        var by_week_stats = {}
-//        var player_objects = []
-//        if ($scope.is_red_zone) {
-//          player_objects = $scope.rz_weekly_players
-//          rz_active_stat =$scope.stat
-//        }
-//        else {
-//          player_objects = $scope.weekly_players
-//          active_stat = $scope.stat
-//        }
-//        for (var index in player_objects){
-//            for (var key in player_objects[index].stats){
-//              if (!(player_objects[index].stats[key].week in by_week_stats)){
-//                by_week_stats[player_objects[index].stats[key].week] = [{
-//                  'stat': player_objects[index].stats[key][stat],
-//                  'player': player_objects[index].player
-//                  }]
-//              }
-//              else {
-//                by_week_stats[player_objects[index].stats[key].week].push({
-//                  'stat': player_objects[index].stats[key][stat],
-//                  'player': player_objects[index].player
-//                  })
-//              }
-//            }
-//          }
-//        var tempstack = []
-//        for (var index in by_week_stats){
-//          tempstack.push({'week': index, 'stats': by_week_stats[index]})
-//        }
-//        $scope.stackstats = tempstack
-//      } // end makeStackGraphData
-      
       function makeGraphData(stat) {   
-//        console.log('makegraphdata')
-//        console.log($scope.players)
         var player_objects = []
         if ($scope.is_red_zone) {
           player_objects = $scope.rz_players
@@ -411,14 +370,12 @@ angular.module('angularApp')
         }
         $scope.stats = []
         for (var index in player_objects) {
-//          console.log(player_objects[index][stat])
           if (player_objects[index][stat] > 0) {
             $scope.stats.push({'player': player_objects[index].full_name, 
                                'stat':   player_objects[index][stat]});
           } //end if
         } // end for
-//        console.log($scope.stats)
-    }//end makeGraphData()
+      }//end makeGraphData()
     
     $scope.is_normalize = false
       

@@ -5,9 +5,7 @@
 
 angular.module('angularApp').
   directive('appVersion', function() {
-    console.log('directib')
     return function(scope, elm, attrs) {
-      console.log('directib')
     };
   })
   .directive('singlePlayer', function($compile) {
@@ -23,6 +21,18 @@ angular.module('angularApp').
     }
     return paginate
   })
+  .directive('sidebar', function() {
+    var sidebar = {
+      templateUrl:'app/views/sidebar.html'
+    }
+    return sidebar
+  })
+  .directive('fanpts', function() {
+    var fanpts = {
+      templateUrl:'app/views/edit_fan_pts.html'
+    }
+    return fanpts
+  })
   .directive('headerlinks', function() {
     var headerlinks = {
       templateUrl:'app/views/headerlinks.html'
@@ -36,10 +46,8 @@ angular.module('angularApp').
       postfunction: '=postfunction'
       }, 
       link: function(scope, element, attrs){
-        console.log('link directive autocomplete')
         element.on('keyup', function() {
           scope.postfunction()
-          console.log('on input')
         })
       }
     }
@@ -52,7 +60,6 @@ angular.module('angularApp').
       link: function(scope, element, attrs) {
         scope.$watch('data', function() {
           if (scope.data){
-            console.log(scope.data)
             maker()
           }
         })
@@ -94,16 +101,23 @@ angular.module('angularApp').
   return {
     restrict: 'EA',
     scope: { data: '=data',
-             players: '=players'
+             is_weekly: '=weekly',
+             players: '=players',
+             stat: '=stat'
            },
     link: function(scope, element, attrs) {
     
       scope.$watch('data', function() {
         if (scope.data){
-//         console.log(scope.data)
           maker()
         }
       }, true)
+      
+    scope.$watch('is_weekly', function() {
+        if (scope.data && !scope.is_weekly){
+          maker()
+        }
+      })
       
     var maker = function(){
       d3Service.d3().then(function(d3) {
@@ -173,8 +187,26 @@ angular.module('angularApp').
               .style("text-anchor", "end")
               .style('fill', 'black')
               .text(function(d) { return d; });
-//       .text(function(d) { return (d.data.player); });
-//      scope.render(scope.data)
+              
+        var stat_alias = { 'passing_yds': 'Passing Yards',
+                       'passing_int': 'Interceptions',
+                       'passing_tds': 'Passing TDs',
+                       'receiving_yds': 'Receiving Yards',
+                       'receiving_tds': 'Receiving TDs',
+                       'receiving_rec': 'Receptions',
+                       'receiving_tar': 'Receiving Targets',
+                       'rushing_yds': 'Rushing Yards',
+                       'rushing_att': 'Rushing Attempts',
+                       'rushing_tds': 'Rushing TDs'
+                        }
+        svg.append('text')
+            .attr('x', 0)
+            .attr('y', 0)
+            .style("text-anchor", "middle")
+            .style('fill', 'black')
+            .style("font-size","20px")
+            .text(stat_alias[scope.stat])
+ 
      });      
      }
       
@@ -185,12 +217,12 @@ angular.module('angularApp').
   return {
     restrict: 'EA',
     scope: { stats: '=stats',
-             player: '=player' 
+             player: '=player' ,
+             stat: '=stat'
     },
     link: function(scope, element, attrs) {
       scope.$watch('stats', function() {
         if (scope.stats){
-//          console.log(scope.stats)
           maker()
         }
       })
@@ -219,9 +251,7 @@ angular.module('angularApp').
                     .attr("height", h + margin.top + margin.bottom)
                   .append("g")
                     .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
-//                    .attr("transform", "translate(0, 200)");
         var line = d3.svg.line()
-//                     .x(function(d, i) {return x(d.week);})
                      .x(function(d, i) {return x(d.week);})
                      .y(function(d) {return y(d.stat);})
                      .interpolate("monotone")
@@ -271,6 +301,33 @@ angular.module('angularApp').
               .style("text-anchor", "end")
               .style('fill', 'black')
               .text(function(d) { return d; });
+        
+        var stat_alias = { 'passing_yds': 'Passing Yards',
+               'passing_int': 'Interceptions',
+               'passing_tds': 'Passing TDs',
+               'receiving_yds': 'Receiving Yards',
+               'receiving_tds': 'Receiving TDs',
+               'receiving_rec': 'Receptions',
+               'receiving_tar': 'Receiving Targets',
+               'rushing_yds': 'Rushing Yards',
+               'rushing_att': 'Rushing Attempts',
+               'rushing_tds': 'Rushing TDs'
+                }
+                
+        svg.append('text')
+            .attr('x', -300)
+            .attr('y', -30)
+            .style('fill', 'black')
+            .style("font-size","20px")
+            .attr("transform", "rotate(-90)")
+            .text(stat_alias[scope.stat])
+        
+        svg.append('text')
+            .attr('x', 330)
+            .attr('y', 470)
+            .style('fill', 'black')
+            .style("font-size","20px")
+            .text('Week')
                             
      });   
      }
@@ -306,7 +363,7 @@ angular.module('angularApp').
              normalize: '=normalize',
              stat_to_show: '=stat'
            },
-//    template: '<button ng-show="data" ng-model="is_normalized">normalize</button>',
+
     link: function(scope, element, attrs) {
     
       scope.$watch('data', function() {
@@ -326,6 +383,18 @@ angular.module('angularApp').
           maker()
         }
       })
+      
+    var stat_alias = { 'passing_yds': 'Passing Yards',
+                       'passing_int': 'Interceptions',
+                       'passing_tds': 'Passing TDs',
+                       'receiving_yds': 'Receiving Yards',
+                       'receiving_tds': 'Receiving TDs',
+                       'receiving_rec': 'Receptions',
+                       'receiving_tar': 'Receiving Targets',
+                       'rushing_yds': 'Rushing Yards',
+                       'rushing_att': 'Rushing Attempts',
+                       'rushing_tds': 'Rushing TDs'
+                     }
     
     var maker = function(){
       var is_normal = scope.normalize;
@@ -369,7 +438,7 @@ angular.module('angularApp').
                     .attr("width", w)
                     .attr("height", h + margin.top + margin.bottom)
                   .append("g")
-                    .attr("transform", "translate(" + margin.left + "," + margin.top + ")")
+                    .attr("transform", "translate(" + margin.left + ", 0 )")
 
 
         var rect = svg.selectAll('.week')
@@ -434,6 +503,21 @@ angular.module('angularApp').
               .style("text-anchor", "end")
               .style('fill', 'black')
               .text(function(d) { return d; });
+              
+        svg.append('text')
+            .attr('x', -290)
+            .attr('y', -35)
+            .style('fill', 'black')
+            .style("font-size","20px")
+            .text(stat_alias[scope.stat_to_show])
+            .attr("transform", "rotate(-90)")
+            
+        svg.append('text')
+            .attr('x', 290)
+            .attr('y', h+40)
+            .style('fill', 'black')
+            .style("font-size","20px")
+            .text('Week')
                                  
      });      
      }
@@ -449,7 +533,6 @@ angular.module('angularApp').
              multiples: '=multiples'
     },
     
-//    template: '<button ng-show="data" ng-model="is_normalized">normalize</button>',
     link: function(scope, element, attrs) {
     
       scope.$watch('data', function() {
@@ -477,15 +560,12 @@ angular.module('angularApp').
         var w = 960 - margin.left - margin.right,
             h = 500 - margin.top - margin.bottom;
             
-//        var y = d3.scale.linear().range([h, 0]).domain([0,scope.data[0].player.sorting_score * 1.1])
         var y = d3.scale.linear().range([h, 0])
-//        var x = d3.scale.ordinal().domain([1, 25]).range([0 + margin.top - margin.bottom, (w - margin.left - margin.right)*.75])
+
         var x = d3.scale.ordinal().domain(scope.data.map(function(d) {return (d.full_name)})).rangeRoundBands([0, w-160], .1)
         
-//        var color = d3.scale.category20c().domain(scope.players.map(function(player){return player.player.full_name}))
         var color = d3.scale.category10()
         
-//        var xAxis = d3.svg.axis().scale(x).domain(scope.data.map(function(d) {return (d.player.full_name)}))
         var xAxis = d3.svg.axis().scale(x)
         
         var yAxis = d3.svg.axis().scale(y).ticks(10)
@@ -520,7 +600,13 @@ angular.module('angularApp').
                   var single_stat_rect = {}
                   single_stat_rect['stat'] = k
                   if (single_rect_index > 0){
-                     single_stat_rect['y1'] = single_rect[single_rect_index-1]['y1'] + multiply(k, d[k])
+                    if (multiply(k, d[k]) < 0){
+                      single_rect[single_rect_index-1]['y1'] += multiply(k, d[k])
+                      single_stat_rect['y1'] = single_rect[single_rect_index-1]['y1']
+                    }
+                    else{
+                      single_stat_rect['y1'] = single_rect[single_rect_index-1]['y1'] + multiply(k, d[k])
+                    }
                   }
                   else {
                     single_stat_rect['y1'] = multiply(k, d[k])
@@ -533,7 +619,6 @@ angular.module('angularApp').
                 }
                 
               }
-//              console.log(single_rect)
               scope.multipliers()
               y.domain([0, max_y1*1.1])
               return single_rect
@@ -551,7 +636,6 @@ angular.module('angularApp').
                             .selectAll('text')
                             .style("text-anchor", "end")
                             .attr('transform', 'rotate(-45)')
-//                            .attr("transform", "translate(20," + (h) + ")")
                             
         var yAxisGroup = svg.append('g')
                             .call(yAxis)
@@ -585,6 +669,14 @@ angular.module('angularApp').
               .style("text-anchor", "end")
               .style('fill', 'black')
               .text(function(d) { return labels[d]; });
+              
+         svg.append('text')
+            .attr('x', -290)
+            .attr('y', -35)
+            .style('fill', 'black')
+            .style("font-size","20px")
+            .text('Total Fantasy Points')
+            .attr("transform", "rotate(-90)")
       }); //end d3Service
     }
   }

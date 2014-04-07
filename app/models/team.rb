@@ -40,21 +40,22 @@ class Team < ActiveRecord::Base
       records_array = ActiveRecord::Base.connection.execute(sanitize_sql([sql, team]))
   end
   
-  def self.weekly_totals(team, is_red_zone = 'no')
-    puts team
+  def self.weekly_totals(team, red_zone = 'no')
+    if red_zone == 'yes'
+      red_zone = 'rz_'
+    else
+      red_zone = ''
+    end 
+    
     sql = "
         select full_name, week, passing_yds, passing_tds,
         rushing_yds, rushing_tds, rushing_att, receiving_yds, 
         receiving_tds, receiving_rec, receiving_tar
         from players
-        inner join game_stats on players.player_id = game_stats.player_id
-        where game_stats.team = (?) and season_type = 'Regular' order by game_stats.week, full_name;
+        inner join #{red_zone}game_stats on players.player_id = #{red_zone}game_stats.player_id
+        where #{red_zone}game_stats.team = (?) and season_type = 'Regular' order by #{red_zone}game_stats.week, full_name;
       "
       records_array = ActiveRecord::Base.connection.execute(sanitize_sql([sql, team]))
-      records_array.each do |r|
-        puts r
-        puts ''
-      end
   end
   
 end

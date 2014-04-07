@@ -1,39 +1,14 @@
 <div class='players_list' ng-controller = 'gridCtrl'>
 
-<div player-comp-graph data='players' multipliers='multipliers' multiples='multiples' class='comp_graph'></div>
-
-<div>
-  Passing Yards<input type="number" ng-model='multiples.passing_yds' />
-  Passing TDs<input type="number" ng-model='multiples.passing_tds' />
-  Passing INT<input type="number" ng-model='multiples.passing_int' />
-  Rushing Yards<input type="number" ng-model='multiples.rushing_yds' />
-  Rushing TDs<input type="number" ng-model='multiples.rushing_tds' />
-  Receiving Yards<input type="number" ng-model='multiples.receiving_yds' />
-  Receiving TDs<input type="number" ng-model='multiples.receiving_tds' />
-  Receptions<input type="number" ng-model='multiples.receiving_rec' />
-</div>
-
-<ul>
-  <li ng-repeat="gweek in weeks">
-  <input type="checkbox" ng-model="gweek.value">week {{gweek.week}}</li>
-</ul>
-<div id= "holder">
-  
-  <span class = 'player_row QB'> QB <input ng-click="position_check('QB')" type="checkbox" ng-model="positions.QB"></span>
-  <span class = 'player_row RB'>RB <input ng-click="position_check('RB')" type="checkbox" ng-model="positions.RB"></span>
-  <span class = 'player_row WR'>WR <input ng-click="position_check('WR')" type="checkbox" ng-model="positions.WR"></span>
-  <span class = 'player_row TE'>TE <input ng-click="position_check('TE')" type="checkbox" ng-model="positions.TE"></span>
-  
-  
-  <button ng-click="update_position()" ng-disabled='disabled'>UPDATE</button>
-
-  <button ng-class="{true:'is_red_zone', false:'is_rz'}[is_red_zone]"s ng-click="red_zone()">Red Zone Only</button>
-  <button ng-class="{true:'is_red_zone', false:'is_rz'}[is_red_zone]"s ng-click="sum_or_avg()">sum/avg</button>
-  <span paginate>
-    
-  </span>
-</div>
+<div class="col-md-2">
+  <div sidebar></div>
+</div>  
+  	
+<div class="col-md-6">
+  <div player-comp-graph data='players' multipliers='multipliers' multiples='multiples' class='comp_graph'></div>
+  <span paginate> </span>
   <table border="1" cellspacing="2" cellpadding="2">
+    <tr><th colspan=2></th><th colspan=5>Passing</th><th colspan=3>Rushing</th><th colspan=4>Receiving</th></tr>
     <tr><th></th><th>Player</th><th>Yards</th><th>TDs</th><th>INT</th>
     <th>Attempts</th><th>Completions</th><th>Yards</th>
     <th>TDs</th><th>Rushes</th><th>Yards</th><th>TDs</th><th>Receptions</th>

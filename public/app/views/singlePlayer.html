@@ -49,7 +49,7 @@ ng-show="show_compare">
 </ul>
 -->
 <div ng-class = "{true: 'active_graph', false: 'inactive_graph'} [player.player_id == active_player]">
-  <div d3_line_chart stats="players_on_graph_data" player="active_player_data.player.player_id"></div> 
+  <div d3_line_chart stats="players_on_graph_data" stat='active_stat' player="active_player_data.player.player_id"></div> 
 </div>
 
 
