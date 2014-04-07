@@ -109,6 +109,16 @@ cursor: pointer;
   margin:10px;
 }
 
+.maintable td {
+  text-align:right;
+  padding: 3px;
+}
+
+td.playercell {
+  white-space: nowrap;
+  text-align:left;
+}
+
 
 
 

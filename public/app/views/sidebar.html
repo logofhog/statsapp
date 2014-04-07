@@ -10,10 +10,10 @@
     <li><button ng-model="editpoints" ng-click="editpoints = !editpoints">Edit Point Values</button>
       <div fanpts ng-show="editpoints" ></div>
     </li>
-    <li><button ng-model="editweeks" ng-click="editweeks = !editweeks">Edit Weeks</button>
+    <li><button ng-model="editweeks" ng-click="editweeks = !editweeks">Customize Weeks</button>
       <ul ng-show="editweeks">
         <li ng-repeat="gweek in weeks">
-        <input type="checkbox" ng-model="gweek.value">week {{gweek.week}}</li>
+        <input type="checkbox" ng-model="gweek.value"><span ng-click="gweek.value=!gweek.value">week {{gweek.week}}</span></li>
         <button ng-click="update_position()" ng-disabled='disabled'>UPDATE</button>
       </ul>
     </li>
