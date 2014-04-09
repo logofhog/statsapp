@@ -1,3 +1,7 @@
+body {
+
+}
+
 h1 {
   color:red;
 }
@@ -24,7 +28,8 @@ g.arc {
 }
 
 svg {
-  margin-bottom:50px;
+  height:100%;
+  margin-bottom:0px;
 }
 
 .is_red_zone {
@@ -36,19 +41,30 @@ svg {
 }
 
 .player_row.QB {
-  background-color:#FFF3BE;
+/*  border:1px solid #04859D; */
+
 }
 
 .player_row.WR {
-  background-color:#FCBCC0;
+  border-bottom-color:#1437AD;
+  border-bottom-style:ridge;
+  border-left-color:#1437AD;
+
+
 }
 
 .player_row.TE {
-  background-color:#B6E9AE;
+  border-bottom-color:#FFB000;
+  border-bottom-style:ridge;
+  border-left-color:#FFB000;
+
 }
 
 .player_row.RB {
-  background-color:#B1A7D7;
+  border-bottom-color:#FF7C00;
+  border-bottom-style:ridge;
+  border-left-color:#FF7C00;
+
 }
 
 #holder {
@@ -119,6 +135,52 @@ td.playercell {
   text-align:left;
 }
 
+.fanpts input {
+  width:60px;
+}
 
+.fanptswell {
+  padding:5px;
+}
+
+.fanptswell label {
+
+}
+
+.form-control input {
+  padding:5px;
+}
+
+.well {
+  padding:5px;
+}
+
+.well button {
+  width:90%;
+  padding:5px;
+  margin-top:5px;
+  margin-bottom:5px;
+}
+
+.well label {
+  max-width:90%;
+}
+
+
+.btn-sidebar { 
+  color: #ffffff; 
+  background-color: #040205; 
+  border-color: #130269; 
+} 
+
+.btn-sidebar:hover, 
+.btn-sidebar:focus, 
+.btn-sidebar:active, 
+.btn-sidebar.active, 
+.open .dropdown-toggle.btn-sidebar { 
+  color: #ffffff; 
+  background-color: #BA0000; 
+  border-color: #130269; 
+} 
 
 

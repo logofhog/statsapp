@@ -556,13 +556,13 @@ angular.module('angularApp').
         var clearrect = d3.selectAll('rect').remove()
         var max_stat = 0;
 
-        var margin = {top: 20, right: 10, bottom: 100, left: 50};
-        var w = 960 - margin.left - margin.right,
+        var margin = {top: 20, right: 0, bottom: 100, left: 50};
+        var w = 800 - margin.left - margin.right,
             h = 500 - margin.top - margin.bottom;
             
         var y = d3.scale.linear().range([h, 0])
 
-        var x = d3.scale.ordinal().domain(scope.data.map(function(d) {return (d.full_name)})).rangeRoundBands([0, w-160], .1)
+        var x = d3.scale.ordinal().domain(scope.data.map(function(d) {return (d.full_name)})).rangeRoundBands([0, w-130], .1)
         
         var color = d3.scale.category10()
         
@@ -573,10 +573,14 @@ angular.module('angularApp').
         
         var svg = d3.select('.comp_graph')
                     .append('svg')
-                    .attr("width", w)
-                    .attr("height", h + margin.top + margin.bottom)
+                    .attr("viewBox", "0 0 800 500")
+                    .attr("preserveAspectRatio", "xMidYMid")
+//                    .attr("width", '100%')
+//                    .attr("height", '80%')
+//                    .attr("width", w)
+//                    .attr("height", h + margin.top + margin.bottom)
                   .append("g")
-                    .attr("transform", "translate(" + margin.left + "," + margin.top + ")")
+                    .attr("transform", "translate(" + margin.left +  "," + margin.top + ")")
 
 
         var rect = svg.selectAll('svg')
@@ -624,7 +628,7 @@ angular.module('angularApp').
               return single_rect
               })
           .enter().append('rect')          
-            .attr('width', '25')
+            .attr('width', '20')
             .attr('y', function(d) {return y(d.y1)} )
             .attr("height", function(d) {return h-y(d.y1- d.y0)})
             .style("fill", function(d) {
@@ -657,13 +661,13 @@ angular.module('angularApp').
                         .attr("transform", function(d, i) { return "translate(0," + i * 20 + ")"; })
         
         legend.append("rect")
-              .attr("x", w - margin.right-margin.left-10)
-              .attr("width", 28)
+              .attr("x", w - margin.right-40)
+              .attr("width", 40)
               .attr("height", 18)
               .style("fill", function(d) {return color(d)});
               
         legend.append("text")
-              .attr("x", w - margin.right-margin.left-10)
+              .attr("x", w - margin.right-margin.left+5)
               .attr("y", 9)
               .attr("dy", ".35em")
               .style("text-anchor", "end")
@@ -675,7 +679,7 @@ angular.module('angularApp').
             .attr('y', -35)
             .style('fill', 'black')
             .style("font-size","20px")
-            .text('Total Fantasy Points')
+            .text('Fantasy Points')
             .attr("transform", "rotate(-90)")
       }); //end d3Service
     }

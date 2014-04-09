@@ -70,14 +70,14 @@ angular.module('angularApp')
       return computed_multiples[stat] * value
     }
     
-    $scope.position_check = function(value) {
-      var pos = ''
-      for (var key in $scope.positions) {
-        if ($scope.positions[key]) {
-          pos += key
-        }
-      }
-    }
+//    $scope.position_check = function(value) {
+//      var pos = ''
+//      for (var key in $scope.positions) {
+//        if ($scope.positions[key]) {
+//          pos += key
+//        }
+//      }
+//    }
     
     $scope.update_position = function() {
       var url = make_url()
@@ -104,6 +104,7 @@ angular.module('angularApp')
     
     $scope.is_red_zone = false
     $scope.onePosition = false
+    
     var make_url = function() {
       var urlParams
       var pos = ''
@@ -179,6 +180,7 @@ angular.module('angularApp')
     }
 
     $scope.addPlayer = function(to_add) {
+      console.log('here')
       apiutils.get('players/'+to_add.id).then(function(response){
         if (check_for_duplicates(response.data.player)) {
           players_to_graph.push(response.data)
