@@ -32,7 +32,7 @@ class Team < ActiveRecord::Base
          as total_tds
         from players 
         inner join #{red_zone}game_stats on players.player_id = #{red_zone}game_stats.player_id
-        where players.team = (?)
+        where #{red_zone}game_stats.team = (?)
         and season_type= 'Regular'
         group by players.full_name, players.position
         order by total_tds desc;
