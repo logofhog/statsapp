@@ -152,19 +152,32 @@ angular.module('angularApp').
       
       g.append("path")
        .attr("d", arc)
-       .style("fill", function(d) { return color(d.data.player); });
+       .style("fill", function(d) { return color(d.data.player); })
       
       g.append("text")
        .attr("transform", function(d) { 
                             return "translate(" + arc.centroid(d) + ")"; })
        .attr("dy", ".35em")
        .style("text-anchor", "middle")
-       .text(function(d) {
+       .html(function(d) {
           if ((d.endAngle - d.startAngle) > 0.5) {
-            return d.data.player
+            return d.data.player 
           }
           else {
-            player_legend.push(d.data.player)
+            player_legend.push({'player':d.data.player,
+                                'value': + d.value})
+          }
+        });
+        
+      g.append("text")
+       .attr("transform", function(d) { 
+                            return "translate(" + arc.centroid(d)[0] + "," + (arc.centroid(d)[1] + 15) + ")"; })
+//       .attr("transform", function(d) {console.log(arc.centroid(d)[0])})
+       .attr("dy", ".35em")
+       .style("text-anchor", "middle")
+       .html(function(d) {
+          if ((d.endAngle - d.startAngle) > 0.5) {
+            return d.value 
           }
         });
         
@@ -178,7 +191,7 @@ angular.module('angularApp').
               .attr("x", 360)
               .attr("width", 28)
               .attr("height", 18)
-              .style("fill", function(d) {return color(d)});
+              .style("fill", function(d) {return color(d.player)});
               
         legend.append("text")
               .attr("x", 350)
@@ -186,7 +199,7 @@ angular.module('angularApp').
               .attr("dy", ".35em")
               .style("text-anchor", "end")
               .style('fill', 'black')
-              .text(function(d) { return d; });
+              .text(function(d) { return d.player + ' ' + d.value; });
               
         var stat_alias = { 'passing_yds': 'Passing Yards',
                        'passing_int': 'Interceptions',
@@ -477,6 +490,8 @@ angular.module('angularApp').
             .attr('y', function(d) { return y(d.prev + parseInt(d[scope.stat_to_show]))})
             .attr("height", function(d) { return h-y(parseInt(d[scope.stat_to_show])); })
             .style("fill", function(d) {return color(d.full_name)})
+            .append("svg:title")
+             .text(function(d) { return d.full_name + ' ' + d[scope.stat_to_show]})
 
         var xAxisGroup = svg.append('g')
                             .attr("transform", "translate(20," + (h) + ")")
@@ -547,6 +562,16 @@ angular.module('angularApp').
         }
       }, true)
       
+    var labels = {'passing_yds': 'Passing Yards', 
+                      'passing_tds': 'Passing TDs',
+                      'passing_int': 'Passing INT',
+                      'receiving_yds': 'Receiving Yards',
+                      'receiving_tds': 'Receiving TDs',
+                      'receiving_rec': 'Receptions',
+                      'rushing_yds': 'Rushing Yards', 
+                      'rushing_tds': 'Rushing TDs'
+                      }
+      
     var maker = function(){
       var is_normal = scope.normalize;
       var temp_data = scope.data
@@ -610,10 +635,12 @@ angular.module('angularApp').
                     }
                     else{
                       single_stat_rect['y1'] = single_rect[single_rect_index-1]['y1'] + multiply(k, d[k])
+                      single_stat_rect['total'] = d[k]
                     }
                   }
                   else {
                     single_stat_rect['y1'] = multiply(k, d[k])
+                    single_stat_rect['total'] = d[k]
                   }
                   single_stat_rect['y0'] = (single_rect_index > 0) ? single_rect[single_rect_index-1]['y1'] : 0
                   single_rect_index += 1
@@ -633,6 +660,8 @@ angular.module('angularApp').
             .attr("height", function(d) {return h-y(d.y1- d.y0)})
             .style("fill", function(d) {
             return color(d.stat)})
+            .append("svg:title")
+             .text(function(d) { return d.total + ' ' + labels[d.stat]})
 
         var xAxisGroup = svg.append('g')
                             .attr("transform", "translate(0," + (h) + ")")
@@ -644,15 +673,7 @@ angular.module('angularApp').
         var yAxisGroup = svg.append('g')
                             .call(yAxis)
         
-        var labels = {'passing_yds': 'Passing Yards', 
-                      'passing_tds': 'Passing TDs',
-                      'passing_int': 'Passing INT',
-                      'receiving_yds': 'Receiving Yards',
-                      'receiving_tds': 'Receiving TDs',
-                      'receiving_rec': 'Receptions',
-                      'rushing_yds': 'Rushing Yards', 
-                      'rushing_tds': 'Rushing TDs'
-                      }
+        
                   
         var legend = svg.selectAll('.legend')
                         .data(valid_stat_keys)

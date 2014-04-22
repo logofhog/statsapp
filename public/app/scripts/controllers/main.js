@@ -24,7 +24,6 @@ angular.module('angularApp')
       apiutils.get('/players/'+ urlparams).then(function(response) {
         $scope.disabled = false
         $scope.players = response.data;
-        console.log($scope.players)
         if (($scope.players[0].rushing_yds+$scope.players[0].receiving_tar)%1 != 0) {
           $scope.numfilter = 2
         }
