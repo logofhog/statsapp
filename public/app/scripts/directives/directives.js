@@ -573,6 +573,7 @@ angular.module('angularApp').
                       }
       
     var maker = function(){
+      if (scope.data.length>1) {
       var is_normal = scope.normalize;
       var temp_data = scope.data
 
@@ -702,7 +703,13 @@ angular.module('angularApp').
             .style("font-size","20px")
             .text('Fantasy Points')
             .attr("transform", "rotate(-90)")
+            
       }); //end d3Service
+      }
+      else {
+        d3Service.d3().then(function(d3) {
+        var clear = d3.selectAll('svg').remove()})
+      }
     }
   }
   }

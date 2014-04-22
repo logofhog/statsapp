@@ -36,4 +36,8 @@
     
     
   </ul>
+  <input type="text" ng-model="asyncSelectedSide.player" placeholder="seach for player..." 
+  typeahead="suggest as suggest.name for suggest in get_auto_names($viewValue) | filter:$viewValue" 
+  typeahead-loading="loading" typeahead-min-length='3' 
+  typeahead-on-select = 'searchPlayer(asyncSelectedSide.player)'>
 </div>

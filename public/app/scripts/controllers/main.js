@@ -13,6 +13,7 @@ angular.module('angularApp')
                             }
   })
   .controller('MainCtrl', function ($scope, $rootScope, apiutils) {
+    $scope.asyncSelectedSide = {}
     
     $scope.positions = {'QB':true,
                         'RB':true,
@@ -77,6 +78,17 @@ angular.module('angularApp')
 //        }
 //      }
 //    }
+
+    $scope.searchPlayer = function(player){
+      $scope.positions = {'QB':true,
+                          'RB':true,
+                          'WR':true,
+                          'TE':true}
+      apiutils.get('players/'+make_url() + '&player_id=' + player.id).then(function(response){
+        $scope.players = response.data;
+        })
+      $scope.asyncSelectedSide = {}
+    }
     
     $scope.update_position = function() {
       var url = make_url()
@@ -149,7 +161,6 @@ angular.module('angularApp')
     get_data(make_url())
   })
   .controller('gridCtrl', function ($scope, apiutils) {
-    
     var players_to_graph = []
 
     $scope.get_single_player = function(player_id) {
@@ -158,15 +169,13 @@ angular.module('angularApp')
       $scope.active_player = player_id
       apiutils.get('players/'+player_id).then(function(response){
         $scope.active_player_data = response.data
-        console.log(response.data)
         players_to_graph.push($scope.active_player_data)
         }
       );
     }
       
     $scope.close = function() {
-      
-    $scope.active_player = ''
+      $scope.active_player = ''
     }
     
     var check_for_duplicates = function(player) {
@@ -177,14 +186,15 @@ angular.module('angularApp')
       }
       return true
     }
-
+    $scope.asyncSelected = {}
     $scope.addPlayer = function(to_add) {
-      console.log('here')
+      $scope.asyncSelected.player = ''
       apiutils.get('players/'+to_add.id).then(function(response){
         if (check_for_duplicates(response.data.player)) {
           players_to_graph.push(response.data)
           makeGraphData($scope.active_stat)
         }
+        
       });
     }
 

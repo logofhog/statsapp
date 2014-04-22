@@ -7,8 +7,10 @@ class PlayersController < ApplicationController
     omit_weeks = params[:omit_weeks].split(/,/) || []
     is_sum = params[:is_sum]
     page = (params[:page] || 0).to_i * 25
+    player_id = params[:player_id] || ''
     
-    @player = Player.season_totals(stats_type, is_red_zone, omit_weeks, position, page, is_sum)
+    @player = Player.season_totals(stats_type, is_red_zone, omit_weeks,
+                                   position, page, is_sum, player_id)
     
     render json: @player
   end

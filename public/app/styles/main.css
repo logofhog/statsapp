@@ -6,6 +6,15 @@ h1 {
   color:red;
 }
 
+.addmargins {
+  margin:2%;
+  max-width:900px;
+}
+
+.alignleft {
+  text-align:left
+}
+
 g {
   fill:none;
 }
